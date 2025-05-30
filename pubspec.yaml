@@ -1,0 +1,47 @@
+name: loge_app
+description: "A new Flutter project."
+version: 1.0.0+1
+
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+
+dependencies:
+  flutter_secure_storage: ^9.2.4
+  curved_navigation_bar: ^1.0.3
+
+  dio: ^5.0.0
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  get:
+  iconsax: any
+  google_fonts:
+  intl: ^0.18.1
+  image_picker: ^1.1.0
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_test:
+    sdk: flutter
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/Tiny house-bro.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/Tiny house-bro.png"
+
+
+  flutter_lints: any
+
+flutter:
+
+  uses-material-design: true
+
+
+  assets:
+    - assets/images/
+  #   - images/a_dot_ham.jpeg
+
