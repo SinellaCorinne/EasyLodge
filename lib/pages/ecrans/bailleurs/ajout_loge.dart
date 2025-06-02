@@ -20,7 +20,8 @@ class _AjoutLogeState extends State<AjoutLoge> {
   final titreController = TextEditingController();
   final typeController = TextEditingController();
   final prixController = TextEditingController();
-  final equipementsController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final localisationController =TextEditingController();
 
   final List<XFile> _images = [];
   final ImagePicker _picker = ImagePicker();
@@ -41,7 +42,8 @@ class _AjoutLogeState extends State<AjoutLoge> {
         "titre": titreController.text.trim(),
         "type_logement": typeController.text.trim(),
         "prix": prixController.text.trim(),
-        "equipements": equipementsController.text.trim(),
+        "description": descriptionController.text.trim(),
+        'localisation':localisationController.text.trim(),
         "photos": [
           for (var image in _images)
             await dio_package.MultipartFile.fromFile(image.path, filename: image.name)
@@ -67,7 +69,8 @@ class _AjoutLogeState extends State<AjoutLoge> {
         titreController.clear();
         typeController.clear();
         prixController.clear();
-        equipementsController.clear();
+        descriptionController.clear();
+        localisationController.clear();
         setState(() => _images.clear());
       } else {
         Get.snackbar("Erreur", "Échec de l'ajout du logement",
@@ -84,7 +87,8 @@ class _AjoutLogeState extends State<AjoutLoge> {
     titreController.dispose();
     typeController.dispose();
     prixController.dispose();
-    equipementsController.dispose();
+    descriptionController.dispose();
+    localisationController.dispose();
     super.dispose();
   }
 
@@ -151,13 +155,24 @@ class _AjoutLogeState extends State<AjoutLoge> {
                   const SizedBox(height: 12),
 
                   TextFormField(
-                    controller: equipementsController,
+                    controller: descriptionController,
                     decoration: InputDecoration(
-                      labelText: "Équipements",
+                      labelText: "Description",
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     validator: (value) =>
                     value == null || value.trim().isEmpty ? "Entrez les équipements" : null,
+                  ),
+                  const SizedBox(height: 12),
+
+                  TextFormField(
+                    controller: localisationController,
+                    decoration: InputDecoration(
+                      labelText: "Lieu",
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    validator: (value) =>
+                    value == null || value.trim().isEmpty ? "Entrez le lieu" : null,
                   ),
 
                   const SizedBox(height: 20),

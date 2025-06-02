@@ -21,8 +21,8 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController nomController = TextEditingController();
+  final TextEditingController prenomController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -73,13 +73,13 @@ class _RegisterState extends State<Register> {
 
     try {
       final formData = dio_package.FormData.fromMap({
-        "nom": lastNameController.text.trim(),
-        "prenom": firstNameController.text.trim(),
-        "telephone": phoneController.text.trim(),
+        "nom": nomController.text.trim(),
+        "prenom": prenomController.text.trim(),
+        "tel": phoneController.text.trim(),
         "email": emailController.text.trim(),
         "password": passwordController.text.trim(),
         "password_confirmation": rePasswordController.text.trim(),
-        "role": role,
+        "role_user": role,
         "carte_etudiant": await dio_package.MultipartFile.fromFile(
           studentCardFile!.path,
           filename: studentCardFile!.path.split('/').last,
@@ -87,7 +87,7 @@ class _RegisterState extends State<Register> {
       });
 
       final response = await dio.post(
-        'http://192.168.100.192:8000/api/register',
+        '',
         data: formData,
         options: dio_package.Options(
           headers: {
@@ -142,13 +142,13 @@ class _RegisterState extends State<Register> {
 
                     Textfield(
                       name: "Noms",
-                      controller: firstNameController,
+                      controller: nomController,
                       validator: (value) => value == null || value.isEmpty ? 'Veuillez entrer votre nom' : null,
                     ),
                     const SizedBox(height: 10),
                     Textfield(
                       name: "Prénoms",
-                      controller: lastNameController,
+                      controller: prenomController,
                       validator: (value) => value == null || value.isEmpty ? 'Veuillez entrer votre prénom' : null,
                     ),
                     const SizedBox(height: 10),

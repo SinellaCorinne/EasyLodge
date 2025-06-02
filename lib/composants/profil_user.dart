@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../auth_bailleur/register2.dart';
+import '../auth_etu/register2.dart';
 import '../auth_etu/register.dart';
 import '../composants/Button.dart';
 import '../theme/style.dart';
@@ -18,11 +18,11 @@ class _ProfilUserState extends State<ProfilUser> {
   String? selectedRole;
   final box = GetStorage();
 
-  void onRoleSelected(String role) {
+  void onRoleSelected(String role_user) {
     setState(() {
-      selectedRole = role;
+      selectedRole = role_user;
     });
-    box.write('selectedRole', role); // Stocker le rôle dès la sélection
+    box.write('selectedRole', role_user); // Stocker le rôle dès la sélection
   }
 
   @override

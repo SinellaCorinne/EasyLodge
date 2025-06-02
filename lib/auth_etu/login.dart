@@ -35,7 +35,7 @@ class _LoginState extends State<Login> {
 
     try {
       final response = await dio.post(
-        'http://192.168.100.192:8000/api/login', // 🔁 Mets ici ta vraie URL
+        '', // 🔁 Mets ici ta vraie URL
         data: {
           "email": emailController.text.trim(),
           "password": passwordController.text.trim(),
@@ -44,7 +44,7 @@ class _LoginState extends State<Login> {
 
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
-        final role = data['role'];
+        final role = data['role_user'];
         final email = data['email'] ?? emailController.text;
         final message = data['message'] ?? 'Connexion réussie';
 

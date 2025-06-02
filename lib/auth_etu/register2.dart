@@ -6,7 +6,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loge_app/composants/textField.dart';
 import 'package:loge_app/pages/ecrans/bailleurs/composants/baill_page.dart';
-import '../auth_etu/login.dart';
+import 'login.dart';
 import '../composants/Button.dart';
 import '../theme/style.dart';
 // ... imports identiques
@@ -23,8 +23,8 @@ class _Register2State extends State<Register2> {
   final dio_package.Dio dio = dio_package.Dio();
   final ImagePicker picker = ImagePicker();
 
-  final TextEditingController firstNameController = TextEditingController();
-  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController nomController = TextEditingController();
+  final TextEditingController prenomController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -58,12 +58,12 @@ class _Register2State extends State<Register2> {
 
     try {
       final formData = dio_package.FormData.fromMap({
-        "nom": lastNameController.text.trim(),
-        "prenom": firstNameController.text.trim(),
-        "telephone": phoneController.text.trim(),
+        "nom": nomController.text.trim(),
+        "prenom": prenomController.text.trim(),
+        "tel": phoneController.text.trim(),
         "email": emailController.text.trim(),
         "password": passwordController.text.trim(),
-        "role": role,
+        "role_user": role,
         "password_confirmation": rePasswordController.text.trim(),
         "justificatif": await dio_package.MultipartFile.fromFile(
           justificatifFile!.path,
@@ -133,13 +133,13 @@ class _Register2State extends State<Register2> {
 
                     Textfield(
                       name: "Noms",
-                      controller: firstNameController,
+                      controller: nomController,
                       validator: (value) => value == null || value.isEmpty ? 'Veuillez entrer votre nom' : null,
                     ),
                     const SizedBox(height: 10),
                     Textfield(
                       name: "Prénoms",
-                      controller: lastNameController,
+                      controller: prenomController,
                       validator: (value) => value == null || value.isEmpty ? 'Veuillez entrer votre prénom' : null,
                     ),
                     const SizedBox(height: 10),
