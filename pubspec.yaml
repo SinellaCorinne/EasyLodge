@@ -17,6 +17,7 @@ dependencies:
 
   cupertino_icons: ^1.0.6
   get:
+  get_storage: ^2.0.3
   iconsax: any
   google_fonts:
   intl: ^0.18.1

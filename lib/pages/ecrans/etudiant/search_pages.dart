@@ -4,7 +4,10 @@ import 'package:loge_app/pages/ecrans/etudiant/details_loge.dart';
 import '../../../theme/style.dart';
 
 class SearchPages extends StatelessWidget {
-  const SearchPages({super.key});
+  final List<Map<String, dynamic>> resultats;
+
+  const SearchPages({super.key, required this.resultats});
+
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +81,7 @@ class SearchPages extends StatelessWidget {
       {
         "titre": "Appartement étudiant",
         "lieu": "Abomey",
-        "prix": "18 000 FCFA",
+        "prix": "38 000 FCFA",
         "image": "assets/images/logement.jpeg"
       },
     ];

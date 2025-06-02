@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../../auth_etu/login.dart';
 import '../../../theme/style.dart';
 
 class UserPage1 extends StatelessWidget {
@@ -73,6 +75,21 @@ class UserPage1 extends StatelessWidget {
             icon: Icons.notifications,
             title: "Notifications",
             onTap: () {},
+          ),
+          _buildMenuItem(
+            icon: Icons.logout,
+            title: "Déconnexion",
+            onTap: () {
+              // Logique de déconnexion ici
+              Get.defaultDialog(
+                title: "Déconnexion",
+                middleText: "Souhaitez-vous vraiment vous déconnecter ?",
+                textCancel: "Annuler",
+                textConfirm: "Déconnecter",
+                confirmTextColor: KColors.primary,
+                onConfirm: () => Get.to(Login()),
+              );
+            },
           ),
 
           const SizedBox(height: 30),

@@ -32,12 +32,12 @@ class MesLogesPages extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         title:
             const Text("Mes annonces", style: TextStyle(color: KColors.primary)),
         centerTitle: true,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.white),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),

@@ -138,9 +138,9 @@ class _DetailLogeState extends State<DetailLoge> {
                             elevation: 3,
                           ),
                           onPressed: () {},
-                          child: const Text(
+                          child: Text(
                             "Contacter",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),
                           ),
                         ),
                       ),

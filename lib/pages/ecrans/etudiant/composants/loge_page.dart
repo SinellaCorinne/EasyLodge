@@ -21,60 +21,13 @@ class LogePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         foregroundColor: Colors.white,
         backgroundColor: KColors.primary,
         centerTitle: true,
         title: Text("EasyLodge", style: KTypography.h2(context, color: Colors.white)),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: KColors.primary,
-              ),
-              child: Text(
-                'EasyLodge',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Iconsax.profile_circle),
-              title: const Text('Mon profil'),
-              onTap: () {
-                controller.updateCurentIndex(3); // Aller à l'onglet "Moi"
-                Navigator.pop(context); // Fermer le Drawer
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Paramètres'),
-              onTap: () {
-                // Ajoute ta logique de navigation ici si besoin
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Déconnexion'),
-              onTap: () {
-                Get.defaultDialog(
-                  title: "Déconnexion",
-                  middleText: "Souhaitez-vous vraiment vous déconnecter ?",
-                  textCancel: "Annuler",
-                  textConfirm: "Déconnecter",
-                  confirmTextColor: Colors.white,
-                  onConfirm: () => Get.to(Login())
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Obx(() => IndexedStack(

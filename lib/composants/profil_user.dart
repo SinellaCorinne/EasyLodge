@@ -1,14 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../auth_bailleur/register2.dart';
 import '../auth_etu/register.dart';
 import '../composants/Button.dart';
-import '../composants/i_item.dart';
-import 'package:flutter/material.dart';
-
 import '../theme/style.dart';
-import 'item.dart';
-import 'item1.dart';
 
 class ProfilUser extends StatefulWidget {
   ProfilUser({super.key});
@@ -18,20 +15,50 @@ class ProfilUser extends StatefulWidget {
 }
 
 class _ProfilUserState extends State<ProfilUser> {
-  @override
   String? selectedRole;
+  final box = GetStorage();
 
+  void onRoleSelected(String role) {
+    setState(() {
+      selectedRole = role;
+    });
+    box.write('selectedRole', role); // Stocker le rôle dès la sélection
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor:  Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: PageView(
         children: [
-          Item1(
-            image: "assets/images/House searching-amico.png",
-            title: 'Quel est votre profil ?',
-            description: "Sélectionnez un rôle pour continuer",
-            action: Column(
+          // Utilisation d'un widget custom ou remplacer par un Container classique
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CheckboxListTile(
+                Image.asset("assets/images/House searching-amico.png", height: 200),
+                SizedBox(height: 30),
+                Text(
+                  'Quel est votre profil ?',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: KColors.primary,
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  "Sélectionnez un rôle pour continuer",
+                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 40),
+
+                // Radio buttons pour choisir un rôle unique
+                RadioListTile<String>(
+                  value: 'etudiant',
+                  groupValue: selectedRole,
                   title: Row(
                     children: [
                       Icon(Icons.school, color: KColors.primary),
@@ -39,14 +66,13 @@ class _ProfilUserState extends State<ProfilUser> {
                       Text("Je suis étudiant"),
                     ],
                   ),
-                  value: selectedRole == 'etudiant',
-                  onChanged: (bool? value) {
-                    setState(() {
-                      selectedRole = value! ? 'etudiant' : null;
-                    });
+                  onChanged: (value) {
+                    if (value != null) onRoleSelected(value);
                   },
                 ),
-                CheckboxListTile(
+                RadioListTile<String>(
+                  value: 'bailleur',
+                  groupValue: selectedRole,
                   title: Row(
                     children: [
                       Icon(Icons.home_work, color: KColors.primary),
@@ -54,22 +80,21 @@ class _ProfilUserState extends State<ProfilUser> {
                       Text("Je suis bailleur"),
                     ],
                   ),
-                  value: selectedRole == 'bailleur',
-                  onChanged: (bool? value) {
-                    setState(() {
-                      selectedRole = value! ? 'bailleur' : null;
-                    });
+                  onChanged: (value) {
+                    if (value != null) onRoleSelected(value);
                   },
                 ),
-                SizedBox(height: 20),
+
+                SizedBox(height: 40),
+
                 Button(
                   child: Text("Continuer"),
                   onPressed: selectedRole != null
                       ? () {
                     if (selectedRole == 'etudiant') {
-                      Get.to(Register());
+                      Get.to(() => Register());
                     } else if (selectedRole == 'bailleur') {
-                      Get.to(Register2());
+                      Get.to(() => Register2());
                     }
                   }
                       : null,

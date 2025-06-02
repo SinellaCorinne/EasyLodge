@@ -13,7 +13,22 @@ class HomePage extends StatelessWidget {
       {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
       {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
       {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
-      // ... tu peux garder le reste de ta liste
+      {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Studio moderne", "lieu": "Calavi", "prix": "15 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Chambre simple", "lieu": "Abomey", "prix": "10 000 FCFA", "image": "assets/images/logement.jpeg"},
+      {"titre": "Appartement T2", "lieu": "Cotonou", "prix": "25 000 FCFA", "image": "assets/images/logement.jpeg"},
+
     ];
 
     return Scaffold(
@@ -90,7 +105,7 @@ class HomePage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: KColors.primary,
                   foregroundColor: Colors.white,
-                  elevation: 3,
+                  elevation: 4,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
@@ -111,7 +126,7 @@ class HomePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Card(
-                elevation: 3,
+                elevation: 4,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: ListTile(
                   leading: Icon(Icons.tips_and_updates, color: Colors.amber.shade700),

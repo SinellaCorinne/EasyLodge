@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loge_app/pages/ecrans/bailleurs/paiements.dart';
+import '../../../auth_etu/login.dart';
 import '../../../theme/style.dart';
 
 class UserPage extends StatelessWidget {
@@ -72,6 +73,21 @@ class UserPage extends StatelessWidget {
           title: "Notifications",
           onTap: () {},
         ),
+          _buildMenuItem(
+          icon: Icons.logout,
+          title: "Déconnexion",
+          onTap: () {
+            // Logique de déconnexion ici
+            Get.defaultDialog(
+              title: "Déconnexion",
+              middleText: "Souhaitez-vous vraiment vous déconnecter ?",
+              textCancel: "Annuler",
+              textConfirm: "Déconnecter",
+              confirmTextColor: KColors.primary,
+              onConfirm: () => Get.to(Login()),
+            );
+          },
+        ),
 
         const SizedBox(height: 30),
         Divider(color: Colors.grey[400], thickness: 1),
@@ -121,7 +137,7 @@ class UserPage extends StatelessWidget {
             onPressed: () {},
             child: Text(
               "Publier l'avis",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: Colors.white),
             ),
           ),
         )
