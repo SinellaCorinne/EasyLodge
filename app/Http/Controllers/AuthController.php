@@ -52,7 +52,7 @@ class AuthController extends Controller
         if ($request->role_user === 'Etudiant') {
             $validator = Validator::make($request->all(), [
                 'universite' => 'required|string|max:255',
-                'carte_etudiant' => 'required|string|max:255',
+                'carte_etudiant' => 'required|image|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -71,7 +71,7 @@ class AuthController extends Controller
             ]);
         } else {
             $validator = Validator::make($request->all(), [
-                'carte_identite' => 'required|string|max:255',
+                'carte_identite' => 'required|image|max:2048',
             ]);
 
             if ($validator->fails()) {
