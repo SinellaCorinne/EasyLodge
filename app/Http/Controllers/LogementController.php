@@ -15,7 +15,9 @@ class LogementController extends Controller
      */
     public function index()
     {
-        $logements = Logement::with('bailleur.utilisateur')->get();
+        $logements = Logement::with(['bailleur.utilisateur'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'status' => true,
@@ -69,6 +71,9 @@ class LogementController extends Controller
             'photo' => $request->photo,
             'bailleur_id' => $bailleur->bailleur_id,
         ]);
+
+        // Load the relationships
+        $logement->load('bailleur.utilisateur');
 
         return response()->json([
             'status' => true,
@@ -153,6 +158,9 @@ class LogementController extends Controller
         }
 
         $logement->update($request->all());
+
+        // Load the relationships
+        $logement->load('bailleur.utilisateur');
 
         return response()->json([
             'status' => true,
