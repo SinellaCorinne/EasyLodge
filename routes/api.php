@@ -8,6 +8,17 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\MessageController;
 
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
 // Authentication routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -16,8 +27,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Public routes for logements
 Route::get('/logements', [LogementController::class, 'index']);
-Route::get('/logements/{id}', [LogementController::class, 'show']);
 Route::get('/logements/search', [LogementController::class, 'search']);
+Route::get('/logements/{id}', [LogementController::class, 'show']);
+
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
