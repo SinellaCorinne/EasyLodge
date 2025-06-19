@@ -54,4 +54,28 @@ class Logement extends Model
     {
         return $this->hasMany(Reservation::class, 'logement_id', 'logement_id');
     }
+
+    /**
+     * Get the reviews for the housing unit.
+     */
+    public function avis()
+    {
+        return $this->hasMany(Avis::class, 'logement_id', 'logement_id');
+    }
+
+    /**
+     * Get the average rating for the housing unit.
+     */
+    public function getAverageRatingAttribute()
+    {
+        return $this->avis()->avg('note');
+    }
+
+    /**
+     * Get the total number of reviews for the housing unit.
+     */
+    public function getTotalReviewsAttribute()
+    {
+        return $this->avis()->count();
+    }
 }

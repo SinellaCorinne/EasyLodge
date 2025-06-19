@@ -108,7 +108,11 @@ class PaiementController extends Controller
             ], 400);
         }
 
+        // Generate unique reference
+        $reference = $this->generatePaymentReference();
+
         $paiement = Paiement::create([
+            'reference' => $reference,
             'reservation_id' => $request->reservation_id,
             'montant' => $request->montant,
             'methode_paie' => $request->methode_paie,
@@ -219,5 +223,71 @@ class PaiementController extends Controller
             'message' => 'Payment status updated successfully',
             'paiement' => $paiement
         ], 200);
+    }
+
+    /**
+     * Search payments by reference.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function search(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'reference' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $query = Paiement::with(['reservation.logement', 'reservation.etudiant.utilisateur'])
+            ->where('reference', $request->reference);
+
+        // Filter based on user role
+        if ($user->isEtudiant()) {
+            $query->whereHas('reservation', function ($q) use ($user) {
+                $q->where('etudiant_id', $user->etudiant->etudiant_id);
+            });
+        } elseif ($user->isBailleur()) {
+            $bailleurId = $user->bailleur->bailleur_id;
+            $query->whereHas('reservation.logement', function ($q) use ($bailleurId) {
+                $q->where('bailleur_id', $bailleurId);
+            });
+        }
+
+        $paiement = $query->first();
+
+        if (!$paiement) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Payment not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => true,
+            'paiement' => $paiement
+        ], 200);
+    }
+
+    /**
+     * Generate a unique payment reference.
+     *
+     * @return string
+     */
+    private function generatePaymentReference()
+    {
+        do {
+            $reference = 'PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -8));
+        } while (Paiement::where('reference', $reference)->exists());
+
+        return $reference;
     }
 }

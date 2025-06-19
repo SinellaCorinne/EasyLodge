@@ -19,6 +19,7 @@ class Paiement extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'reference',
         'reservation_id',
         'montant',
         'methode_paie',

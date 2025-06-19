@@ -23,7 +23,7 @@ class MessageController extends Controller
             ->orWhere('destinataire_id', $user->user_id)
             ->with(['expediteur', 'destinataire'])
             ->orderBy('date_envoie', 'desc')
-            ->get();
+            ->pagination(15);// Get the last 15 messages: au lieu de "get"
 
         return response()->json([
             'status' => true,
@@ -115,7 +115,7 @@ class MessageController extends Controller
      * @param  int  $userId
      * @return \Illuminate\Http\Response
      */
-    public function getConversation(Request $request, $userId)
+    public function showConversation(Request $request, $userId)
     {
         $user = $request->user();
 
@@ -145,6 +145,56 @@ class MessageController extends Controller
             'messages' => $messages
         ], 200);
     }
+
+    public function markAsRead($id)
+{
+    $message = Message::find($id);
+    if ($message && $message->destinataire_id == auth()->id()) {
+        $message->update(['lu_a' => now()]);
+    }
+    return response()->json(['status' => true]);
+}
+
+    public function unreadCount(Request $request)
+{
+    $unreadCount = Message::where('destinataire_id', $request->user()->user_id)
+        ->whereNull('lu_a')
+        ->count();
+
+    return response()->json([
+        'status' => true,
+        'unread_count' => $unreadCount
+    ], 200);
+}
+
+    /**
+ * Get all unique conversations for the authenticated user
+ */
+public function conversations(Request $request)
+{
+    $user = $request->user();
+    
+    $conversations = Message::selectRaw('
+        CASE 
+            WHEN expediteur_id = ? THEN destinataire_id 
+            ELSE expediteur_id 
+        END as interlocutor_id,
+        MAX(date_envoie) as last_message_date
+    ', [$user->user_id])
+    ->where('expediteur_id', $user->user_id)
+    ->orWhere('destinataire_id', $user->user_id)
+    ->groupBy('interlocutor_id')
+    ->with(['interlocutor' => function($query) {
+        $query->select('user_id', 'nom', 'prenom');
+    }])
+    ->orderBy('last_message_date', 'desc')
+    ->get();
+
+    return response()->json([
+        'status' => true,
+        'conversations' => $conversations
+    ], 200);
+}
 
     /**
      * Delete a message.
