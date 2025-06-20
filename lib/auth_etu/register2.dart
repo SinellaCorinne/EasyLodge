@@ -1,15 +1,17 @@
 import 'dart:io';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio_package;
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:loge_app/composants/textField.dart';
 import 'package:loge_app/pages/ecrans/bailleurs/composants/baill_page.dart';
+import '../composants/profil_user.dart';
+import '../pages/ecrans/bailleurs/userInfos/termes.dart';
 import 'login.dart';
 import '../composants/Button.dart';
 import '../theme/style.dart';
-// ... imports identiques
 
 class Register2 extends StatefulWidget {
   const Register2({super.key});
@@ -22,6 +24,7 @@ class _Register2State extends State<Register2> {
   final _formKey = GlobalKey<FormState>();
   final dio_package.Dio dio = dio_package.Dio();
   final ImagePicker picker = ImagePicker();
+  final box = GetStorage();
 
   final TextEditingController nomController = TextEditingController();
   final TextEditingController prenomController = TextEditingController();
@@ -32,10 +35,18 @@ class _Register2State extends State<Register2> {
 
   File? justificatifFile;
   bool isLoading = false;
-  final box = GetStorage();
+  String? role;
+  bool accepteConditions = false;
 
-  // Fixe le rôle à "bailleur"
-  final String role = "bailleur";
+  @override
+  void initState() {
+    super.initState();
+    role = box.read('selectedRole');
+    if (role == null) {
+      Get.off(() => ProfilUser());
+    }
+    print("Rôle sélectionné: $role");
+  }
 
   Future<void> pickJustificatif() async {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -46,6 +57,13 @@ class _Register2State extends State<Register2> {
 
   Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (!accepteConditions) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Vous devez accepter les termes et conditions.")),
+      );
+      return;
+    }
 
     if (justificatifFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,16 +81,16 @@ class _Register2State extends State<Register2> {
         "tel": phoneController.text.trim(),
         "email": emailController.text.trim(),
         "password": passwordController.text.trim(),
-        "role_user": role,
         "password_confirmation": rePasswordController.text.trim(),
-        "justificatif": await dio_package.MultipartFile.fromFile(
+        "role_user": role,
+        "carte_identite": await dio_package.MultipartFile.fromFile(
           justificatifFile!.path,
           filename: justificatifFile!.path.split('/').last,
         ),
       });
 
       final response = await dio.post(
-        '', // <-- Remplis ton endpoint ici
+        'http://192.168.100.192:8000/api/register',
         data: formData,
         options: dio_package.Options(
           headers: {
@@ -82,15 +100,12 @@ class _Register2State extends State<Register2> {
         ),
       );
 
-      final data = response.data;
-      final String message = data['message'] ?? "Inscription réussie";
-
-      // Message de succès
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-
-      // Redirection après succès
-      Get.off(() =>  BaillPage());
-
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data;
+        final token = data['token'];
+        await box.write('auth_token', token);
+        Get.offAll(() => BaillPage());
+      }
     } on dio_package.DioException catch (e) {
       final error = e.response?.data['message'] ?? "Erreur lors de l'inscription";
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
@@ -130,7 +145,6 @@ class _Register2State extends State<Register2> {
                     const SizedBox(height: 15),
                     Text("Bienvenue cher bailleur", style: KTypography.h3(context, color: KColors.primary)),
                     const SizedBox(height: 20),
-
                     Textfield(
                       name: "Noms",
                       controller: nomController,
@@ -182,7 +196,6 @@ class _Register2State extends State<Register2> {
                       },
                     ),
                     const SizedBox(height: 15),
-
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text("Justificatif", style: KTypography.h6(context)),
@@ -207,7 +220,7 @@ class _Register2State extends State<Register2> {
                               child: Text(
                                 justificatifFile != null
                                     ? justificatifFile!.path.split('/').last
-                                    : "Téléverser votre justificatif",
+                                    : "Téléverser votre justificatif (carte d'identité, Cip ou autres)",
                                 style: TextStyle(color: KColors.primary),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -216,25 +229,50 @@ class _Register2State extends State<Register2> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 25),
-
+                    const SizedBox(height: 15),
+                    CheckboxListTile(
+                      value: accepteConditions,
+                      onChanged: (value) => setState(() => accepteConditions = value ?? false),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      title: RichText(
+                        text: TextSpan(
+                          text: "En cochant, vous acceptez les ",
+                          style: TextStyle(fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,),
+                          children: [
+                            TextSpan(
+                              text: "termes et conditions d'utilisation",
+                              style: TextStyle(color: KColors.secondary, decoration: TextDecoration.underline, fontFamily: 'Poppins',
+                                fontSize: 14,
+                                fontWeight: FontWeight.normal,
+                                ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap =  () => Get.to(() => TermesConditionsPage1())
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 15),
                     Button(
                       child: isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text("S'inscrire"),
-                      onPressed: () => Get.to(() => BaillPage()),  //_register,
+                      onPressed: _register,
                       backgroundColor: const Color(0xFF0B0A5C),
                       borderColor: const Color(0xFF0B0A5C),
                       foregroundColor: Colors.white,
                     ),
                     const SizedBox(height: 20),
-
-                    Row(
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Vous avez déjà un compte ? "),
                         GestureDetector(
-                          onTap: () => Get.to(() => Login()),
+                          onTap: () => Get.to(() => const Login()),
                           child: Text(
                             "Connectez-vous",
                             style: TextStyle(

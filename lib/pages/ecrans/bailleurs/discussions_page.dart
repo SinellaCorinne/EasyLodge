@@ -2,37 +2,18 @@ import 'package:flutter/material.dart';
 import '../../../theme/style.dart';
 import '../etudiant/discussion_page.dart';
 
+
 class DiscussionsPage extends StatelessWidget {
   DiscussionsPage({super.key});
 
   final conversations = [
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    {"nom": "Bailleur 1", "dernierMessage": "Bonjour, toujours dispo ?"},
-    {"nom": "Bailleur 2", "dernierMessage": "Le logement est meublé."},
-    // Ajoute d'autres éléments ici
+    {"nom": "Etudiant 1", "dernierMessage": "Bonjour, toujours dispo ?"},
+    {"nom": "Etudiant 2", "dernierMessage": "Le logement est meublé."},
+    {"nom": "Etudiant 1", "dernierMessage": "Bonjour, toujours dispo ?"},
+    {"nom": "Etudiant 2", "dernierMessage": "Le logement est meublé."},
+    {"nom": "Etudiant 1", "dernierMessage": "Bonjour, toujours dispo ?"},
+    {"nom": "Etudiant 2", "dernierMessage": "Le logement est meublé."},
+   // Ajoute d'autres éléments ici
   ];
 
   @override

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:loge_app/pages/ecrans/etudiant/search_pages.dart';
 import '../../../composants/Button.dart';
 import '../../../theme/style.dart';
@@ -22,8 +24,14 @@ class _RecherchePageState extends State<RecherchePage> {
   final Dio dio = Dio();
 
   String? typeLogement = "Studio";
-
   List<dynamic> resultats = [];
+  String _positionInfo = "Chargement de votre position...";
+
+  @override
+  void initState() {
+    super.initState();
+    _useLocation();
+  }
 
   Future<void> envoyerRecherche() async {
     try {
@@ -47,7 +55,7 @@ class _RecherchePageState extends State<RecherchePage> {
 
       if (response.statusCode == 200) {
         resultats = response.data['resultats']; // adapte cette clé selon ton API
-        Get.to(() => SearchPages(  resultats: [],));
+        Get.to(() => SearchPages());
       } else {
         Get.snackbar("Erreur", "Échec de la recherche",
             backgroundColor: Colors.red, colorText: Colors.white);
@@ -58,6 +66,45 @@ class _RecherchePageState extends State<RecherchePage> {
     }
   }
 
+  Future<bool> _checkPermission() async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      return permission == LocationPermission.always || permission == LocationPermission.whileInUse;
+    }
+    return permission != LocationPermission.deniedForever;
+  }
+
+  Future<Position> _getCurrentLocation() async {
+    bool hasPermission = await _checkPermission();
+    if (!hasPermission) {
+      throw Exception('Permissions non accordées');
+    }
+
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
+  void _useLocation() async {
+    try {
+      Position position = await _getCurrentLocation();
+
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          position.latitude, position.longitude);
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        setState(() {
+          _positionInfo =
+          "Position actuelle : \n${place.locality}, ${place.country}\nLatitude : ${position.latitude}, Longitude : ${position.longitude}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _positionInfo = "Impossible d'obtenir la position.";
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -89,6 +136,12 @@ class _RecherchePageState extends State<RecherchePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                _positionInfo,
+                style: KTypography.h5(context,color:KColors.primary),
+              ),
+              const SizedBox(height: 16),
+
               Text('Localisation', style: KTypography.h5(context, color: KColors.primary)),
               const SizedBox(height: 8),
               TextFormField(
@@ -216,8 +269,8 @@ class _RecherchePageState extends State<RecherchePage> {
               Center(
                 child: Button(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {Get.to(() => SearchPages(resultats: []));
-
+                    if (_formKey.currentState!.validate()) {
+                      Get.to(() => SearchPages());
                       // envoyerRecherche();
                     }
                   },

@@ -20,51 +20,54 @@ class DiscussionPage extends StatelessWidget {
 
     return Scaffold(
 
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Rechercher des discussions..",
-                prefixIcon: Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.grey.shade100,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  borderSide: BorderSide.none,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Rechercher des discussions..",
+                  prefixIcon: Icon(Icons.search),
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.separated(
-              itemCount: conversations.length,
-              separatorBuilder: (_, __) => Divider(height: 1),
-              itemBuilder: (context, index) {
-                final conv = conversations[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: KColors.primary.withOpacity(0.1),
-                    child: Icon(Icons.person, color: KColors.primary),
-                  ),
-                  title: Text(conv["nom"]!,
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(conv["dernierMessage"]!),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ChatPage(nom: conv["nom"]!),
-                      ),
-                    );
-                  },
-                );
-              },
+            Expanded(
+              child: ListView.separated(
+                itemCount: conversations.length,
+                separatorBuilder: (_, __) => Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final conv = conversations[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: KColors.primary.withOpacity(0.1),
+                      child: Icon(Icons.person, color: KColors.primary),
+                    ),
+                    title: Text(conv["nom"]!,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(conv["dernierMessage"]!),
+                    trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ChatPage(nom: conv["nom"]!),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -105,7 +108,7 @@ class _ChatPageState extends State<ChatPage> {
         iconTheme: IconThemeData(color: KColors.primary),
         title: Text(
           "Discussion avec ${widget.nom}",
-          style: KTypography.h3(context, color: KColors.primary),
+          style: KTypography.h4(context, color: KColors.primary),
         ),
         centerTitle: true,
       ),

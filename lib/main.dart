@@ -3,12 +3,51 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'auth_etu/onboarding.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initializeDateFormatting('fr_FR', null);
   await GetStorage.init(); // Initialiser le stockage local
+
+  // Vérification et demande de permission de localisation
+  bool permissionGranted = await _checkPermission();
+  if (!permissionGranted) {
+    print("⚠️ Permission de localisation refusée ou bloquée.");
+    // Ici tu peux afficher une alerte ou rediriger vers une page informative
+  }
+
   runApp(MyApp());
 }
 
+Future<bool> _checkPermission() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Vérifie si les services de localisation sont activés
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    return false;
+  }
+
+  // Vérifie les permissions actuelles
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      return false;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    // Permissions refusées définitivement
+    return false;
+  }
+
+  return true;
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -17,11 +56,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "EasyLodge",
       theme: ThemeData(
-        scaffoldBackgroundColor:
-            Colors.white, // Couleur de fond pour toutes les pages
-        textTheme: GoogleFonts
-            .poppinsTextTheme(), // Utilisez Google Fonts si nécessaire
-        // Autres configurations de thème
+        scaffoldBackgroundColor: Colors.white,
+        textTheme: GoogleFonts.poppinsTextTheme(),
       ),
       home: Onboarding(),
     );

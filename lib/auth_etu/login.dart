@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:loge_app/auth_etu/forget_password/forgot_password.dart';
 import 'package:loge_app/composants/profil_user.dart';
@@ -35,7 +36,7 @@ class _LoginState extends State<Login> {
 
     try {
       final response = await dio.post(
-        '', // 🔁 Mets ici ta vraie URL
+        'http://192.168.100.192:8000/api/login', // 🔁 Mets ici ta vraie URL
         data: {
           "email": emailController.text.trim(),
           "password": passwordController.text.trim(),
@@ -44,9 +45,14 @@ class _LoginState extends State<Login> {
 
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
-        final role = data['role_user'];
+        final token = data['token'];
+        final role = data['user']['role_user'];
         final email = data['email'] ?? emailController.text;
         final message = data['message'] ?? 'Connexion réussie';
+
+        // Enregistrer le token
+        final box = GetStorage();
+        await box.write('auth_token', token);
 
         setState(() {
           responseText = "Bienvenue $email\n$message";
@@ -54,10 +60,10 @@ class _LoginState extends State<Login> {
         });
 
         // Redirection selon le rôle
-        if (role == 'etudiant') {
-          Get.off(() => LogePage());
-        } else if (role == 'bailleur') {
-          Get.off(() => BaillPage());
+        if (role == 'Etudiant') {
+          Get.to(() => LogePage());
+        } else if (role == 'Bailleur') {
+          Get.to(() => BaillPage());
         } else {
           Get.snackbar('Erreur', 'Rôle inconnu');
         }
@@ -150,7 +156,9 @@ class _LoginState extends State<Login> {
                     else
                       Button(
                         child: Text("Se connecter"),
-                        onPressed: () => Get.to(() => LogePage()),//login,
+                        onPressed: //login,
+                        //() => Get.to(() => LogePage()),//
+                        () =>Get.offAll(() => BaillPage()),
                         backgroundColor: KColors.primary,
                         borderColor: KColors.primary,
                         foregroundColor: Colors.white,
@@ -158,7 +166,8 @@ class _LoginState extends State<Login> {
                     const SizedBox(height: 10),
                     Button(
                       child: Text("S'inscrire"),
-                      onPressed: () => Get.to(() => ProfilUser()),
+                      onPressed:  () =>Get.offAll(() => LogePage()),
+                      // () => Get.to(() => ProfilUser()),
                       backgroundColor: Colors.white,
                       borderColor: KColors.primary,
                       foregroundColor: KColors.primary,

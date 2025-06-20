@@ -23,7 +23,8 @@ class BailleurPaiements extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: Text("Paiements reçus"),
+        centerTitle: true,
+        title: Text("Factures"),
         backgroundColor: KColors.primary,
         foregroundColor: Colors.white,
       ),
