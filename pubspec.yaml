@@ -1,0 +1,57 @@
+name: loge_admin
+description: "A new Flutter project."
+version: 1.0.0+1
+
+
+environment:
+  sdk: '>=3.4.1 <4.0.0'
+
+
+dependencies:
+  flutter_secure_storage: ^9.2.4
+  curved_navigation_bar: ^1.0.3
+
+  dio: ^5.0.0
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.6
+  get:
+  get_storage: ^2.0.3
+  iconsax: any
+  google_fonts:
+  intl: ^0.18.1
+  image_picker: ^1.1.0
+  file_picker:
+
+dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
+  flutter_test:
+    sdk: flutter
+  geolocator: ^9.0.2
+  geocoding: ^2.1.0
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/Tiny house-bro.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/Tiny house-bro.png"
+
+
+  flutter_lints: any
+
+flutter:
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Regular.ttf
+        - asset: assets/fonts/Poppins/Poppins-Bold.ttf
+          weight: 700
+
+  uses-material-design: true
+
+
+  assets:
+    - assets/images/
+  #   - images/a_dot_ham.jpeg
+
