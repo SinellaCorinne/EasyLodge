@@ -32,6 +32,9 @@ class PaiementController extends Controller
                     $query->where('bailleur_id', $bailleurId);
                 })
                 ->get();
+        } elseif ($user->isAdmin()) {
+            // Admin peut voir tous les paiements
+            $paiements = Paiement::with(['reservation.logement', 'reservation.etudiant.utilisateur'])->get();
         } else {
             return response()->json([
                 'status' => false,
@@ -55,6 +58,7 @@ class PaiementController extends Controller
     {
         $user = $request->user();
 
+        // Seuls les étudiants peuvent effectuer des paiements (pas les admins)
         if (!$user->isEtudiant()) {
             return response()->json([
                 'status' => false,
@@ -160,6 +164,7 @@ class PaiementController extends Controller
                 ], 403);
             }
         }
+        // Admin peut voir tous les paiements - pas de vérification supplémentaire
 
         return response()->json([
             'status' => true,
@@ -207,12 +212,14 @@ class PaiementController extends Controller
                     'message' => 'You can only update payments for your own housing listings'
                 ], 403);
             }
-        } else {
+        } elseif (!$user->isAdmin()) {
+            // Si ce n'est ni bailleur ni admin
             return response()->json([
                 'status' => false,
-                'message' => 'Only landlords can update payment status'
+                'message' => 'Only landlords and admins can update payment status'
             ], 403);
         }
+        // Admin peut modifier tous les paiements sans restriction
 
         $paiement->update([
             'statut' => $request->statut
@@ -261,6 +268,7 @@ class PaiementController extends Controller
                 $q->where('bailleur_id', $bailleurId);
             });
         }
+        // Admin peut rechercher tous les paiements - pas de filtre supplémentaire
 
         $paiement = $query->first();
 
@@ -274,6 +282,66 @@ class PaiementController extends Controller
         return response()->json([
             'status' => true,
             'paiement' => $paiement
+        ], 200);
+    }
+
+    /**
+     * Remove the specified payment from storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+        $paiement = Paiement::find($id);
+
+        if (!$paiement) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Payment not found'
+            ], 404);
+        }
+
+        // Check if the user is authorized to delete this payment
+        if ($user->isEtudiant()) {
+            if ($paiement->reservation->etudiant_id != $user->etudiant->etudiant_id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You can only delete your own payments'
+                ], 403);
+            }
+
+            // Students can only delete pending payments
+            if ($paiement->statut !== 'en_attente') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You can only delete pending payments'
+                ], 403);
+            }
+        } elseif ($user->isBailleur()) {
+            $logement = $paiement->reservation->logement;
+            if ($logement->bailleur_id != $user->bailleur->bailleur_id) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You can only delete payments for your own housing listings'
+                ], 403);
+            }
+        } elseif (!$user->isAdmin()) {
+            // Si ce n'est ni étudiant, ni bailleur, ni admin
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+        // Admin peut supprimer tous les paiements
+
+        $paiement->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Payment deleted successfully'
         ], 200);
     }
 

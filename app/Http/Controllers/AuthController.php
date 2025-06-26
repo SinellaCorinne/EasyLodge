@@ -299,4 +299,43 @@ class AuthController extends Controller
             'message' => 'Unable to reset password'
         ], 400);
     }
+
+    //enregistrement d'un administrateur
+        public function registerAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:utilisateurs',
+            'password' => 'required|string|min:8|confirmed',
+            'tel' => 'required|string|max:20',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $admin = User::create([
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'tel' => $request->tel,
+            'role_user' => 'Admin',
+        ]);
+
+        $token = $admin->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Admin registered successfully',
+            'user' => $admin,
+            'token' => $token
+        ], 201);
+    }
+
 }

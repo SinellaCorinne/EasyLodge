@@ -19,7 +19,7 @@
                 $table->decimal('prix', 10, 2);
                 $table->string('localisation');
                 $table->boolean('disponibilite')->default(true);
-                $table->text('photo')->nullable();
+                $table->LongText('photo')->nullable();
                 $table->unsignedBigInteger('bailleur_id');
                 $table->timestamps();
 

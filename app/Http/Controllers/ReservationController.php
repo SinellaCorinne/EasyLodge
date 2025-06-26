@@ -30,6 +30,9 @@ class ReservationController extends Controller
                     $query->where('bailleur_id', $bailleurId);
                 })
                 ->get();
+        } elseif ($user->isAdmin()) {
+            // Admin peut voir toutes les réservations
+            $reservations = Reservation::with(['etudiant.utilisateur', 'logement', 'paiement'])->get();
         } else {
             return response()->json([
                 'status' => false,
@@ -53,6 +56,7 @@ class ReservationController extends Controller
     {
         $user = $request->user();
 
+        // Seuls les étudiants peuvent faire des réservations (pas les admins)
         if (!$user->isEtudiant()) {
             return response()->json([
                 'status' => false,
@@ -125,6 +129,7 @@ class ReservationController extends Controller
                 'message' => 'You can only view reservations for your own housing listings'
             ], 403);
         }
+        // Admin peut voir toutes les réservations - pas de vérification supplémentaire
 
         return response()->json([
             'status' => true,
@@ -188,12 +193,14 @@ class ReservationController extends Controller
                     'message' => 'You can only update reservations for your own housing listings'
                 ], 403);
             }
-        } else {
+        } elseif (!$user->isAdmin()) {
+            // Si ce n'est ni étudiant, ni bailleur, ni admin
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized'
             ], 403);
         }
+        // Admin peut modifier toutes les réservations sans restriction
 
         $reservation->update([
             'statut' => $request->statut
@@ -205,7 +212,8 @@ class ReservationController extends Controller
             'reservation' => $reservation
         ], 200);
     }
-/**
+
+    /**
      * Remove the specified reservation from storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -239,12 +247,14 @@ class ReservationController extends Controller
                     'message' => 'You can only delete reservations for your own housing listings'
                 ], 403);
             }
-        } else {
+        } elseif (!$user->isAdmin()) {
+            // Si ce n'est ni étudiant, ni bailleur, ni admin
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized'
             ], 403);
         }
+        // Admin peut supprimer toutes les réservations
 
         // Check if the reservation has an associated payment
         if ($reservation->paiement) {
@@ -261,6 +271,4 @@ class ReservationController extends Controller
             'message' => 'Reservation deleted successfully'
         ], 200);
     }
-
-
 }

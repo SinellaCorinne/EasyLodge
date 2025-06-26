@@ -96,4 +96,10 @@ class User extends Authenticatable
     {
         return $this->role_user === 'Bailleur';
     }
+//Determine si l'utilisateur est un administrateur
+        public function isAdmin()
+    {
+        return $this->role_user === 'Admin';
+    }
+
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\AvisController;
 use App\Http\Controllers\UniversiteController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,11 +78,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/messages', [MessageController::class, 'store']);
     Route::get('/messages/{id}', [MessageController::class, 'show']);
     Route::delete('/messages/{id}', [MessageController::class, 'destroy']);
-    
+
     // Conversations
     Route::get('/conversations', [MessageController::class, 'conversations']);
     Route::get('/conversations/{interlocutorId}', [MessageController::class, 'showConversation']);
-    
+
     // Statistiques
     Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
 });
@@ -91,13 +92,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     // Créer un avis
     Route::post('/avis', [AvisController::class, 'store']);
-    
+
     // Lister les avis de l'utilisateur connecté
     Route::get('/my-avis', [AvisController::class, 'myAvis']);
-    
+
     // Mettre à jour un avis
     Route::put('/avis/{id}', [AvisController::class, 'update']);
-    
+
     // Supprimer un avis
     Route::delete('/avis/{id}', [AvisController::class, 'destroy']);
 });
@@ -107,3 +108,21 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/universites', [UniversiteController::class, 'store']);
     Route::put('/universites/{id}', [UniversiteController::class, 'update']);
     Route::delete('/universites/{id}', [UniversiteController::class, 'destroy']);
+
+
+    // Route publique pour enregistrer un admin
+    Route::post('/admin/register', [AuthController::class, 'registerAdmin']);
+
+    // Routes protégées pour admin
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard']);
+
+        Route::apiResource('logements', LogementController::class);
+        Route::apiResource('reservations', ReservationController::class);
+        Route::apiResource('paiements', PaiementController::class);
+        Route::apiResource('messages', MessageController::class);
+        Route::apiResource('avis', AvisController::class);
+        Route::apiResource('utilisateurs', UtilisateurController::class);
+        Route::apiResource('parametres', ParametreController::class);
+        Route::apiResource('universites', UniversiteController::class);
+    });

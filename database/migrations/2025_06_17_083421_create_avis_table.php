@@ -32,7 +32,14 @@
 
                 // Un étudiant ne peut donner qu'un seul avis par logement
                 $table->unique(['logement_id', 'etudiant_id']);
-            });
+
+                // Migration pour ajouter les colonnes de modération
+                $table->boolean('moderated')->default(false);
+                $table->text('moderation_reason')->nullable();
+                $table->unsignedBigInteger('moderated_by')->nullable();
+                $table->timestamp('moderated_at')->nullable();
+                
+                });
         }
 
         /**
