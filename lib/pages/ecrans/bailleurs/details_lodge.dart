@@ -20,7 +20,11 @@ class _DetailLodgeState extends State<DetailLodge> {
   @override
   Widget build(BuildContext context) {
     final logement = widget.logement;
-    final images = logement.images;
+
+    // Debug dans le terminal
+    print("LOGEMENT >> ID: ${logement.id}, Titre: ${logement.titre}, Prix: ${logement.prix}");
+
+    final images = logement.images ?? [];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -37,12 +41,12 @@ class _DetailLodgeState extends State<DetailLodge> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         children: [
-          // Galerie d’images
+          // Galerie d'images
           Container(
             height: 220,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 8,
@@ -60,13 +64,30 @@ class _DetailLodgeState extends State<DetailLodge> {
                     onPageChanged: (index) => setState(() => _currentPage = index),
                     itemBuilder: (context, index) {
                       if (images.isNotEmpty) {
+                        final imageUrl = images[index];
+                        return imageUrl.startsWith("http")
+                            ? Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                errorBuilder: (_, error, __) {
+                                  print("Erreur de chargement image : $error");
+                                  return Image.asset(
+                                    "assets/images/logement.jpeg",
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  );
+                                },
+                              )
+                            : Image.asset(imageUrl, fit: BoxFit.cover, width: double.infinity);
+                      } else {
                         return Image.asset(
-                        "assets/images/logement.jpeg",
-                        fit: BoxFit.cover,
-    width: double.infinity,
-    );
-
-    } }
+                          "assets/images/logement.jpeg",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        );
+                      }
+                    },
                   ),
                   if (images.length > 1)
                     Positioned(
@@ -77,7 +98,7 @@ class _DetailLodgeState extends State<DetailLodge> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
                           images.length,
-                              (index) => AnimatedContainer(
+                          (index) => AnimatedContainer(
                             duration: const Duration(milliseconds: 300),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
                             width: _currentPage == index ? 16 : 8,
@@ -91,7 +112,7 @@ class _DetailLodgeState extends State<DetailLodge> {
                           ),
                         ),
                       ),
-                    )
+                    ),
                 ],
               ),
             ),
@@ -108,12 +129,14 @@ class _DetailLodgeState extends State<DetailLodge> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(logement.titre, style: KTypography.h4(context, color: KColors.primary)),
+                  Text(logement.titre ?? "Titre non disponible",
+                      style: KTypography.h4(context, color: KColors.primary)),
                   const SizedBox(height: 12),
-                  Text("Prix : ${logement.prix}", style: KTypography.h6(context)),
+                  Text("Prix : ${logement.prix?.toString() ?? "N/A"} FCFA",
+                      style: KTypography.h6(context)),
                   const SizedBox(height: 12),
                   Text(
-                    "Description : ${logement.description}",
+                    "Description : ${logement.description ?? "Aucune description disponible"}",
                     style: TextStyle(color: Colors.grey[700], height: 1.4),
                   ),
                   const SizedBox(height: 24),
@@ -130,7 +153,8 @@ class _DetailLodgeState extends State<DetailLodge> {
                             elevation: 3,
                           ),
                           onPressed: () {
-                            // Action de contact
+                            print("Bouton contacter pressé");
+                            // TODO: Action contact
                           },
                           child: const Text(
                             "Contacter",
@@ -151,7 +175,22 @@ class _DetailLodgeState extends State<DetailLodge> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
-                          onPressed: () => Get.to(() => ReservationPage(logementId: "${logement.id}", titre: '${logement.titre}', prix: "${logement.prix}",)),
+                          onPressed: () {
+                            try {
+                              print("Navigation vers page réservation...");
+                              Get.to(() => ReservationPage(
+                                logementId: logement.id?.toString()?? "1",
+                                titre: logement.titre ?? "Titre non disponible",
+                                prix: logement.prix?.toString() ?? "0",
+                              ));
+                            } catch (e, stack) {
+                              print("Erreur lors de la navigation : $e");
+                              print(stack);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Erreur : $e")),
+                              );
+                            }
+                          },
                           child: Text(
                             "Réserver",
                             style: TextStyle(
@@ -170,25 +209,29 @@ class _DetailLodgeState extends State<DetailLodge> {
 
           const SizedBox(height: 32),
 
-          // Avis
-          Text("Avis des anciens locataires", style: KTypography.h5(context, color: KColors.primary)),
+          // Avis client
+          Text("Avis des anciens locataires",
+              style: KTypography.h5(context, color: KColors.primary)),
           const SizedBox(height: 12),
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 2,
             color: Colors.white,
-            child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+            child: const ListTile(
+              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
               leading: CircleAvatar(
-                backgroundColor: KColors.primary.withOpacity(0.15),
-                child: const Icon(Icons.person, color: KColors.primary),
+                backgroundColor: Color(0xFFE0E0E0),
+                child: Icon(Icons.person, color: KColors.primary),
               ),
-              title: const Text("Très bon logement, propre et calme."),
+              title: Text("Très bon logement, propre et calme."),
               subtitle: Row(
-                children: List.generate(
-                  5,
-                      (_) => const Icon(Icons.star, size: 16, color: Colors.orange),
-                ),
+                children: [
+                  Icon(Icons.star, size: 16, color: Colors.orange),
+                  Icon(Icons.star, size: 16, color: Colors.orange),
+                  Icon(Icons.star, size: 16, color: Colors.orange),
+                  Icon(Icons.star, size: 16, color: Colors.orange),
+                  Icon(Icons.star, size: 16, color: Colors.orange),
+                ],
               ),
             ),
           ),

@@ -5,6 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'auth_etu/onboarding.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio_package;
+import 'package:get_storage/get_storage.dart';
+import '../../../composants/Button.dart';
+import '../../../theme/style.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +66,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         textTheme: GoogleFonts.poppinsTextTheme(),
       ),
-      home: Onboarding(),
+      home: 
+      Onboarding(),
     );
   }
 }

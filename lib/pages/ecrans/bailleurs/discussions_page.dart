@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../theme/style.dart';
-import '../etudiant/discussion_page.dart';
+import '../bailleurs/chat_page.dart';
 
 
 class DiscussionsPage extends StatelessWidget {
@@ -56,7 +56,7 @@ class DiscussionsPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ChatPage(nom: conv["nom"]!),
+                        builder: (_) => ChatPage(nom: conv["nom"]!,destinataireId: index,),
                       ),
                     );
                   },

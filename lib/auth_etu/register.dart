@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:loge_app/composants/textField.dart';
 import 'package:loge_app/pages/ecrans/etudiant/composants/loge_page.dart';
 import '../composants/Button.dart';
+import '../composants/api_url.dart';
 import '../composants/profil_user.dart';
 import '../pages/ecrans/etudiant/userInfos/termes.dart';
 import '../theme/style.dart';
@@ -22,7 +23,7 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
-  final dio_package.Dio dio = dio_package.Dio();
+  late dio_package.Dio dio;
   final ImagePicker picker = ImagePicker();
   final box = GetStorage();
 
@@ -42,6 +43,13 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
+    dio = dio_package.Dio(
+      dio_package.BaseOptions(
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ),
+    );
+
     role = box.read('selectedRole');
     if (role == null) {
       Get.off(() => ProfilUser());
@@ -57,6 +65,7 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> _register() async {
+    print("Soumission...");
     if (!_formKey.currentState!.validate()) return;
 
     if (!accepteConditions) {
@@ -98,8 +107,10 @@ class _RegisterState extends State<Register> {
         ),
       });
 
+      print("Envoi à : ${ApiBaseUrl.baseUrl}/register");
+
       final response = await dio.post(
-        'http://192.168.100.192:8000/api/register',
+        '${ApiBaseUrl.baseUrl}/register',
         data: formData,
         options: dio_package.Options(
           headers: {
@@ -108,20 +119,55 @@ class _RegisterState extends State<Register> {
           },
         ),
       );
+      print("Response status: ${response.statusCode}");
+      print("Response data: ${response.data}");
 
-      if (response.statusCode == 200 && response.data != null) {
+      if ((response.statusCode == 200 || response.statusCode == 201) && response.data != null) {
         final data = response.data;
         final token = data['token'];
-
-        await box.write('auth_token', token);
-        Get.offAll(() => LogePage());
+        if (token != null) {
+          await box.write('auth_token', token);
+          print("Token reçu, navigation vers LogePage");
+          Get.offAll(() => LogePage());
+        } else {
+          print("Token non trouvé dans la réponse");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Token non reçu, impossible de continuer.")),
+          );
+        }
+      } else {
+        print("Réponse inattendue");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'inscription.")),
+        );
       }
-    } on dio_package.DioException catch (e) {
+    }
+    on dio_package.DioException catch (e) {
       print("STATUS CODE: ${e.response?.statusCode}");
       print("DATA: ${e.response?.data}");
       print("HEADERS: ${e.response?.headers}");
-      final error = e.response?.data['message'] ?? "Erreur lors de l'inscription";
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+
+      // Extraction améliorée du message d'erreur
+      String errorMessage = "Erreur lors de l'inscription";
+
+      if (e.response?.data != null && e.response?.data is Map) {
+        final responseData = e.response!.data as Map;
+
+        if (responseData.containsKey('errors') && responseData['errors'] is Map) {
+          final errors = responseData['errors'] as Map<String, dynamic>;
+          if (errors.isNotEmpty) {
+            errorMessage = errors.values.first[0] ?? errorMessage;
+          }
+        } else if (responseData.containsKey('message')) {
+          errorMessage = responseData['message'];
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -164,11 +210,19 @@ class _RegisterState extends State<Register> {
                       return null;
                     }),
                     const SizedBox(height: 10),
-                    Textfield(name: "Numéro de téléphone", controller: phoneController, validator: (value) {
-                      if (value == null || value.isEmpty) return 'Veuillez entrer votre téléphone';
-                      if (!RegExp(r'^\d{8,15}\$').hasMatch(value)) return 'Numéro invalide';
-                      return null;
-                    }),
+                    Textfield(
+                      name: "Numéro de téléphone",
+                      controller: phoneController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Veuillez entrer votre téléphone';
+                        }
+                        if (!RegExp(r'^\d{8,15}$').hasMatch(value)) {
+                          return 'Numéro invalide';
+                        }
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 10),
                     Textfield(name: "Mot de passe", controller: passwordController, validator: (value) {
                       if (value == null || value.isEmpty) return 'Veuillez entrer un mot de passe';
@@ -220,19 +274,24 @@ class _RegisterState extends State<Register> {
                       title: RichText(
                         text: TextSpan(
                           text: "En cochant, vous acceptez les ",
-                          style: TextStyle( fontFamily: 'Poppins',
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 16,
                             fontWeight: FontWeight.normal,
-                            color: Colors.black,),
+                            color: Colors.black,
+                          ),
                           children: [
                             TextSpan(
                               text: "termes et conditions d'utilisation",
-                              style: TextStyle(color: KColors.secondary, decoration: TextDecoration.underline, fontFamily: 'Poppins',
+                              style: TextStyle(
+                                color: KColors.secondary,
+                                decoration: TextDecoration.underline,
+                                fontFamily: 'Poppins',
                                 fontSize: 12,
                                 fontWeight: FontWeight.normal,
-                                ),
+                              ),
                               recognizer: TapGestureRecognizer()
-                                ..onTap = () => Get.to(() => TermesConditionsPage())
+                                ..onTap = () => Get.to(() => TermesConditionsPage()),
                             ),
                           ],
                         ),

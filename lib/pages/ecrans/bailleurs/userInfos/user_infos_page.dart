@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:dio/dio.dart';
 import 'package:get_storage/get_storage.dart';
 
+import '../../../../composants/api_url.dart';
 import '../../../../theme/style.dart';
 import 'edit_infos.dart';
 
@@ -23,7 +24,7 @@ class UserInfoPage extends StatelessWidget {
 
     try {
       final response = await dio.get(
-        'http://192.168.100.192:8000/api/profile',
+        '${ApiBaseUrl.baseUrl}/profile',
         options: Options(headers: {
           'Authorization': 'Bearer $token',
         }),

@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:loge_app/pages/ecrans/etudiant/search_pages.dart';
 import '../../../composants/Button.dart';
+import '../../../composants/api_url.dart';
 import '../../../theme/style.dart';
 
 class RecherchePage extends StatefulWidget {
@@ -16,7 +18,6 @@ class RecherchePage extends StatefulWidget {
 
 class _RecherchePageState extends State<RecherchePage> {
   final _formKey = GlobalKey<FormState>();
-
   final localisationController = TextEditingController();
   final prixMinController = TextEditingController();
   final prixMaxController = TextEditingController();
@@ -33,10 +34,48 @@ class _RecherchePageState extends State<RecherchePage> {
     _useLocation();
   }
 
-  Future<void> envoyerRecherche() async {
+  Future<void> _useLocation() async {
     try {
-      final response = await dio.post(
-        "https://votre-api.com/recherche",
+      Position pos = await _getCurrentLocation();
+      List<Placemark> places = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+      if (places.isNotEmpty) {
+        final p = places.first;
+        setState(() {
+          _positionInfo =
+              "Position actuelle : ${p.locality}, ${p.country}\nLat : ${pos.latitude}, Lon : ${pos.longitude}";
+        });
+      }
+    } catch (e) {
+      setState(() => _positionInfo = "Impossible d'obtenir la position.");
+    }
+  }
+
+  Future<bool> _checkPermission() async {
+    var perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    return perm == LocationPermission.whileInUse || perm == LocationPermission.always;
+  }
+
+  Future<Position> _getCurrentLocation() async {
+    if (!await _checkPermission()) throw Exception('Permissions non accordées');
+    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
+
+  Future<void> envoyerRecherche() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    await GetStorage.init();
+    final token = GetStorage().read('auth_token');
+    if (token == null) {
+      Get.snackbar("Erreur", "Token non trouvé", backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    try {
+      final resp = await dio.post(
+        "${ApiBaseUrl.baseUrl}/logements/search",
         data: {
           "localisation": localisationController.text.trim(),
           "type_logement": typeLogement,
@@ -48,61 +87,20 @@ class _RecherchePageState extends State<RecherchePage> {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
           },
           validateStatus: (status) => status != null && status < 500,
         ),
       );
 
-      if (response.statusCode == 200) {
-        resultats = response.data['resultats']; // adapte cette clé selon ton API
-        Get.to(() => SearchPages());
+      if (resp.statusCode == 200) {
+        resultats = resp.data['resultats'];
+        Get.to(() => SearchPages(resultats: resultats));
       } else {
-        Get.snackbar("Erreur", "Échec de la recherche",
-            backgroundColor: Colors.red, colorText: Colors.white);
+        Get.snackbar("Erreur", "Échec de la recherche", backgroundColor: Colors.red, colorText: Colors.white);
       }
     } catch (e) {
-      Get.snackbar("Erreur", "Une erreur s'est produite : $e",
-          backgroundColor: Colors.red, colorText: Colors.white);
-    }
-  }
-
-  Future<bool> _checkPermission() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      return permission == LocationPermission.always || permission == LocationPermission.whileInUse;
-    }
-    return permission != LocationPermission.deniedForever;
-  }
-
-  Future<Position> _getCurrentLocation() async {
-    bool hasPermission = await _checkPermission();
-    if (!hasPermission) {
-      throw Exception('Permissions non accordées');
-    }
-
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-  }
-
-  void _useLocation() async {
-    try {
-      Position position = await _getCurrentLocation();
-
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-          position.latitude, position.longitude);
-
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        setState(() {
-          _positionInfo =
-          "Position actuelle : \n${place.locality}, ${place.country}\nLatitude : ${position.latitude}, Longitude : ${position.longitude}";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _positionInfo = "Impossible d'obtenir la position.";
-      });
+      Get.snackbar("Erreur", "Une erreur s'est produite : $e", backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 
@@ -123,165 +121,113 @@ class _RecherchePageState extends State<RecherchePage> {
         foregroundColor: Colors.white,
         backgroundColor: KColors.primary,
         elevation: 2,
-        title: Text(
-          'Recherche avancée',
-          style: KTypography.h3(context, color: Colors.white),
-        ),
+        title: Text('Recherche avancée', style: KTypography.h3(context, color: Colors.white)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _positionInfo,
-                style: KTypography.h5(context,color:KColors.primary),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(_positionInfo, style: KTypography.h5(context, color: KColors.primary)),
+            const SizedBox(height: 16),
+            Text('Localisation', style: KTypography.h5(context, color: KColors.primary)),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: localisationController,
+              decoration: InputDecoration(
+                hintText: 'Ex : Calavi, Cotonou...',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               ),
-              const SizedBox(height: 16),
-
-              Text('Localisation', style: KTypography.h5(context, color: KColors.primary)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: localisationController,
-                decoration: InputDecoration(
-                  hintText: 'Ex : Calavi, Cotonou...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Veuillez entrer une localisation';
-                  }
-                  return null;
-                },
+              validator: (v) => v == null || v.trim().isEmpty ? 'Veuillez entrer une localisation' : null,
+            ),
+            const SizedBox(height: 20),
+            Text('Type de logement', style: KTypography.h5(context, color: KColors.primary)),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: typeLogement,
+              items: ["Studio", "Chambre", "Colocation"].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+              onChanged: (v) => setState(() => typeLogement = v),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                filled: true,
+                fillColor: Colors.white,
               ),
-              const SizedBox(height: 20),
-
-              Text('Type de logement', style: KTypography.h5(context, color: KColors.primary)),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: typeLogement,
-                items: ["Studio", "Chambre", "Colocation"]
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    typeLogement = value!;
-                  });
-                },
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez choisir un type';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-
-              Text('Intervalle de prix (FCFA)', style: KTypography.h5(context, color: KColors.primary)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: prixMinController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Prix min',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Champ requis';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Entrez un nombre valide';
-                        }
-                        return null;
-                      },
-                    ),
+              validator: (v) => v == null || v.isEmpty ? 'Veuillez choisir un type' : null,
+            ),
+            const SizedBox(height: 20),
+            Text('Intervalle de prix (FCFA)', style: KTypography.h5(context, color: KColors.primary)),
+            const SizedBox(height: 8),
+            Row(children: [
+              Expanded(
+                child: TextFormField(
+                  controller: prixMinController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Prix min',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      controller: prixMaxController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Prix max',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                        filled: true,
-                        fillColor: Colors.white,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Champ requis';
-                        }
-                        if (int.tryParse(value) == null) {
-                          return 'Entrez un nombre valide';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              Text('Nombre de chambres', style: KTypography.h5(context, color: KColors.primary)),
-              const SizedBox(height: 8),
-              TextFormField(
-                controller: chambreController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Ex : 1, 2...',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Veuillez indiquer un nombre';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Entrez un nombre valide';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 36),
-
-              Center(
-                child: Button(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Get.to(() => SearchPages());
-                      // envoyerRecherche();
-                    }
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Champ requis';
+                    if (int.tryParse(v) == null) return 'Entrez un nombre valide';
+                    return null;
                   },
-                  child: const Text(
-                    "Rechercher",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
                 ),
               ),
-            ],
-          ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: TextFormField(
+                  controller: prixMaxController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Prix max',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return 'Champ requis';
+                    if (int.tryParse(v) == null) return 'Entrez un nombre valide';
+                    return null;
+                  },
+                ),
+              ),
+            ]),
+            const SizedBox(height: 20),
+            Text('Nombre de chambres', style: KTypography.h5(context, color: KColors.primary)),
+            const SizedBox(height: 8),
+            TextFormField(
+              controller: chambreController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                hintText: 'Ex : 1, 2...',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+              validator: (v) {
+                if (v == null || v.isEmpty) return 'Veuillez indiquer un nombre';
+                if (int.tryParse(v) == null) return 'Entrez un nombre valide';
+                return null;
+              },
+            ),
+            const SizedBox(height: 36),
+            Center(
+              child: Button(
+                onPressed: envoyerRecherche,
+                child: const Text("Rechercher", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+          ]),
         ),
       ),
     );

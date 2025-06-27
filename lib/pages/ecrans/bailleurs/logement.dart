@@ -1,44 +1,25 @@
 class Logement {
-  final int id;
-  final String titre;
-  final String description;
-  final String prix;
-  final List<String> images;
+  final int? id;
+  final String? titre;
+  final String? description;
+  final int? prix;
+  final List<String>? images;
 
   Logement({
-    required this.id,
-    required this.titre,
-    required this.description,
-    required this.prix,
-    required this.images,
+    this.id,
+    this.titre,
+    this.description,
+    this.prix,
+    this.images,
   });
 
   factory Logement.fromJson(Map<String, dynamic> json) {
     return Logement(
-      id: json['id'],
+      id: json['logement_id'],
       titre: json['titre'],
       description: json['description'],
-      prix: json['prix'].toString(),
-      images: List<String>.from(json['images']),
+      prix: json['prix'],
+      images: (json['images'] as List?)?.map((e) => e.toString()).toList(),
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'titre': titre,
-      'description': description,
-      'prix': prix,
-      'images': images,
-    };
-  }
 }
-final logementMap = {
-  'id': 1,
-  'titre': 'Studio à Calavi',
-  'description': 'Logement propre, climatisé',
-  'prix': '15000',
-  'localisation': 'Calavi',
-  'disponibilite': true,
-  'images': ['assets/images/logement.jpeg'],
-};

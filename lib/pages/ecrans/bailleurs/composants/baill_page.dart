@@ -36,7 +36,7 @@ class BaillPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon:  Icon(Icons.notifications_active,),
+            icon:  Icon(Iconsax.notification,),
             tooltip: 'Notifications',
             onPressed: () {
               Get.to(() =>  NotificationsPageBailleur());}

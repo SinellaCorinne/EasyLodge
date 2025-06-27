@@ -15,7 +15,7 @@ class NotificationsPageEtudiant extends StatelessWidget {
       "icon": Iconsax.message,
       "title": "Nouveau message",
       "subtitle": "Vous avez reçu un nouveau message.",
-      "onTap": () => Get.to(() => const DiscussionPage()),
+      "onTap": () => Get.to(() => DiscussionsPage()),
     },
     {
       "icon": Icons.receipt_long,
@@ -27,7 +27,7 @@ class NotificationsPageEtudiant extends StatelessWidget {
       "icon": Icons.warning_amber_rounded,
       "title": "Paiement en retard",
       "subtitle": "Vous avez un paiement en attente.",
-      "onTap": () => Get.to(() => const PaiementPage(reservationId: 1)),
+      "onTap": () => Get.to(() => const PaiementPage(reservationId: 1,prix: "25000",)),
     },
     {
       "icon": Icons.cancel,

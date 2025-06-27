@@ -4,7 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:loge_app/pages/ecrans/etudiant/discussion_page.dart' show DiscussionPage;
 import 'package:loge_app/pages/ecrans/etudiant/logesPages.dart';
-
+import '../discussion_page.dart';
 import '../../../../auth_etu/login.dart';
 import '../../../../composants/header.dart';
 import '../../../../composants/logo.dart';
@@ -40,7 +40,7 @@ class LogePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon:  Icon(Icons.notifications_active,color: Color(0xFF575992),),
+            icon:  Icon(Iconsax.notification,color: Color(0xFF575992),),
             tooltip: 'Notifications',
             onPressed: () {
     Get.to(() =>  NotificationsPageEtudiant());}
@@ -55,7 +55,7 @@ class LogePage extends StatelessWidget {
           index: controller.curentIndex,
           children: [
             HomePage(),
-            DiscussionPage(),
+            DiscussionsPage(),
             Logespages(),
             UserPage1(),
           ],

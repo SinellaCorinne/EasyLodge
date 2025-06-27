@@ -9,7 +9,7 @@ class LogementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.to(const DetailLoge()),
+      onTap: () => Get.to( DetailLoge(logementData: logement,)),
       child: Card(
         elevation: 3,
         shape: RoundedRectangleBorder(

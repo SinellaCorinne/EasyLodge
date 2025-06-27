@@ -4,6 +4,7 @@ import '../theme/style.dart';
 
 class Textfield extends StatelessWidget {
   final String? name;
+  final bool obscureText ;
   final TextInputType? keyboardType;
   final bool showClearButton;
   final Widget? prefixIcon;
@@ -15,6 +16,7 @@ class Textfield extends StatelessWidget {
   const Textfield({
     super.key,
     required this.name,
+    this.obscureText = true,
     this.keyboardType,
     this.prefixIcon,
     this.suffixIcon,

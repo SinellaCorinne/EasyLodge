@@ -29,6 +29,24 @@ class HomePagee extends StatelessWidget {
       "prix": "25 000 FCFA",
       "image": "assets/images/logement.jpeg"
     },
+    {
+      "titre": "Studio moderne",
+      "lieu": "Calavi",
+      "prix": "15 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
+    {
+      "titre": "Chambre simple",
+      "lieu": "Abomey",
+      "prix": "10 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
+    {
+      "titre": "Appartement T2",
+      "lieu": "Cotonou",
+      "prix": "25 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
   ];
 
   @override
@@ -36,7 +54,7 @@ class HomePagee extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: Padding(
-        padding: const EdgeInsets.all(16.0), // ✅ Padding global ici
+        padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,7 +74,7 @@ class HomePagee extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20), // léger padding intérieur conservé
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
@@ -78,7 +96,6 @@ class HomePagee extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
               // Section : Logements récents
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,7 +118,6 @@ class HomePagee extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-
               // Résumé des annonces
               const Row(
                 children: [
@@ -127,7 +143,7 @@ class HomePagee extends StatelessWidget {
                   ],
                 ),
                 child: const Padding(
-                  padding: EdgeInsets.all(16), // allégé ici
+                  padding: EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Icon(Icons.check_circle, color: Colors.white, size: 28),
@@ -143,7 +159,6 @@ class HomePagee extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-
               // Statistiques
               const Row(
                 children: [
@@ -176,27 +191,11 @@ class HomePagee extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 30),
-
               // Boutons
               Center(
                 child: Column(
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () => Get.to(AjoutLoge()),
-                      icon: const Icon(Icons.add),
-                      label: const Text("Ajouter un logement"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: KColors.secondary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 5,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+
                     ElevatedButton.icon(
                       onPressed: () => Get.to(ReservationsPage()),
                       icon: const Icon(Icons.houseboat_outlined),
@@ -219,6 +218,11 @@ class HomePagee extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(AjoutLoge()),
+        backgroundColor: KColors.secondary,
+        child: const Icon(Icons.add,color: Colors.white,),
       ),
     );
   }

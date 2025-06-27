@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:loge_app/composants/textField.dart';
 import 'package:loge_app/pages/ecrans/bailleurs/composants/baill_page.dart';
+import '../composants/api_url.dart';
 import '../composants/profil_user.dart';
 import '../pages/ecrans/bailleurs/userInfos/termes.dart';
 import 'login.dart';
@@ -56,6 +57,7 @@ class _Register2State extends State<Register2> {
   }
 
   Future<void> _register() async {
+    print("Soumission...");
     if (!_formKey.currentState!.validate()) return;
 
     if (!accepteConditions) {
@@ -88,9 +90,11 @@ class _Register2State extends State<Register2> {
           filename: justificatifFile!.path.split('/').last,
         ),
       });
+ 
+       print("Envoi à : ${ApiBaseUrl.baseUrl}/register");
 
       final response = await dio.post(
-        'http://192.168.100.192:8000/api/register',
+        '${ApiBaseUrl.baseUrl}/register',
         data: formData,
         options: dio_package.Options(
           headers: {
@@ -99,22 +103,58 @@ class _Register2State extends State<Register2> {
           },
         ),
       );
+       
 
-      if (response.statusCode == 200 && response.data != null) {
+      print("Response status: ${response.statusCode}");
+      print("Response data: ${response.data}");
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
         final data = response.data;
         final token = data['token'];
         await box.write('auth_token', token);
-        Get.offAll(() => BaillPage());
+        if (token != null) {
+          await box.write('auth_token', token);
+          print("Token reçu, navigation vers LogePage");
+         Get.offAll(() => BaillPage());
+        } else {
+          print("Token non trouvé dans la réponse");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Token non reçu, impossible de continuer.")),
+          );
+        }
+      }else {
+        print("Réponse inattendue");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Erreur lors de l'inscription.")),
+        );
       }
+
     } on dio_package.DioException catch (e) {
-      final error = e.response?.data['message'] ?? "Erreur lors de l'inscription";
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Une erreur inattendue s'est produite.")),
-      );
+      print("STATUS CODE: ${e.response?.statusCode}");
+      print("DATA: ${e.response?.data}");
+      print("HEADERS: ${e.response?.headers}");
+
+      // Extraction améliorée du message d'erreur
+      String errorMessage = "Erreur lors de l'inscription";
+
+      if (e.response?.data != null && e.response?.data is Map) {
+        final responseData = e.response!.data as Map;
+
+        if (responseData.containsKey('errors') && responseData['errors'] is Map) {
+          final errors = responseData['errors'] as Map<String, dynamic>;
+          if (errors.isNotEmpty) {
+            errorMessage = errors.values.first[0] ?? errorMessage;
+          }
+        } else if (responseData.containsKey('message')) {
+          errorMessage = responseData['message'];
+        }
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorMessage)));
     } finally {
-      setState(() => isLoading = false);
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:get_storage/get_storage.dart';
 
+import '../../../../composants/api_url.dart';
 import '../../../../theme/style.dart';
 import 'package:loge_app/pages/ecrans/bailleurs/userInfos/user_infos_page.dart';
 
@@ -43,7 +44,7 @@ class _EditUserInfoPageState extends State<EditUserInfoPage> {
       }
 
       final response = await dio.Dio().get(
-        'http://192.168.100.192:8000/api/profile',
+        'https://8f48-137-255-36-216.ngrok-free.app/api/profile',
         options: dio.Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
@@ -74,7 +75,7 @@ class _EditUserInfoPageState extends State<EditUserInfoPage> {
 
     try {
       final response = await dio.Dio().put(
-        'http://192.168.100.192:8000/api/profile',
+        '${ApiBaseUrl.baseUrl}/profile',
         data: {
           'nom': nomController.text.trim(),
           'prenom': prenomController.text.trim(),

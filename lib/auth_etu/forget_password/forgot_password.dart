@@ -38,7 +38,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
       try {
         final response = await dio.post(
-          'http://192.168.100.192:8000/api/forgot-password',
+          'https://8f48-137-255-36-216.ngrok-free.app/api/forgot-password',
           data: {
             'email': _emailController.text,
           },

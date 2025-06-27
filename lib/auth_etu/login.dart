@@ -6,6 +6,7 @@ import 'package:loge_app/auth_etu/forget_password/forgot_password.dart';
 import 'package:loge_app/composants/profil_user.dart';
 import 'package:loge_app/pages/ecrans/etudiant/composants/loge_page.dart';
 import '../composants/Button.dart';
+import '../composants/api_url.dart';
 import '../composants/textField.dart';
 import '../pages/ecrans/bailleurs/composants/baill_page.dart';
 import '../theme/style.dart';
@@ -28,21 +29,18 @@ class _LoginState extends State<Login> {
 
   Future<void> login() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-
     setState(() {
       isLoading = true;
       responseText = null;
     });
-
     try {
       final response = await dio.post(
-        'http://192.168.100.192:8000/api/login', // 🔁 Mets ici ta vraie URL
+        '${ApiBaseUrl.baseUrl}/login',
         data: {
           "email": emailController.text.trim(),
           "password": passwordController.text.trim(),
         },
       );
-
       if (response.statusCode == 200 && response.data != null) {
         final data = response.data;
         final token = data['token'];
@@ -53,7 +51,6 @@ class _LoginState extends State<Login> {
         // Enregistrer le token
         final box = GetStorage();
         await box.write('auth_token', token);
-
         setState(() {
           responseText = "Bienvenue $email\n$message";
           isLoading = false;
@@ -61,9 +58,9 @@ class _LoginState extends State<Login> {
 
         // Redirection selon le rôle
         if (role == 'Etudiant') {
-          Get.to(() => LogePage());
+          Get.offAll(() => LogePage());
         } else if (role == 'Bailleur') {
-          Get.to(() => BaillPage());
+          Get.offAll(() => BaillPage());
         } else {
           Get.snackbar('Erreur', 'Rôle inconnu');
         }
@@ -113,14 +110,17 @@ class _LoginState extends State<Login> {
                       fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 40),
-                    Text("Connectez-vous",
-                        style: KTypography.h3(context, color: KColors.primary),
-                        textAlign: TextAlign.center),
+                    Text(
+                      "Connectez-vous",
+                      style: KTypography.h3(context, color: KColors.primary),
+                      textAlign: TextAlign.center,
+                    ),
                     const SizedBox(height: 20),
                     Textfield(
                       controller: emailController,
                       name: "Email",
                       keyboardType: TextInputType.emailAddress,
+                      prefixIcon: Icon(Iconsax.user, color: KColors.primary),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Veuillez entrer un email';
@@ -134,6 +134,8 @@ class _LoginState extends State<Login> {
                     Textfield(
                       controller: passwordController,
                       name: "Mot de passe",
+                      obscureText: true,
+                      prefixIcon: Icon(Iconsax.lock, color: KColors.primary),
                       suffixIcon: Icon(Iconsax.password_check, color: KColors.primary),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -146,8 +148,10 @@ class _LoginState extends State<Login> {
                     ),
                     const SizedBox(height: 10),
                     TextButton(
-                      child: Text("Mot de passe oublié ?",
-                          style: KTypography.h6(context, color: KColors.primary)),
+                      child: Text(
+                        "Mot de passe oublié ?",
+                        style: KTypography.h6(context, color: KColors.primary),
+                      ),
                       onPressed: () => Get.to(() => ForgotPassword()),
                     ),
                     const SizedBox(height: 10),
@@ -156,9 +160,7 @@ class _LoginState extends State<Login> {
                     else
                       Button(
                         child: Text("Se connecter"),
-                        onPressed: //login,
-                        //() => Get.to(() => LogePage()),//
-                        () =>Get.offAll(() => BaillPage()),
+                        onPressed: login,
                         backgroundColor: KColors.primary,
                         borderColor: KColors.primary,
                         foregroundColor: Colors.white,
@@ -166,8 +168,7 @@ class _LoginState extends State<Login> {
                     const SizedBox(height: 10),
                     Button(
                       child: Text("S'inscrire"),
-                      onPressed:  () =>Get.offAll(() => LogePage()),
-                      // () => Get.to(() => ProfilUser()),
+                      onPressed: () => Get.to(() => ProfilUser()),
                       backgroundColor: Colors.white,
                       borderColor: KColors.primary,
                       foregroundColor: KColors.primary,

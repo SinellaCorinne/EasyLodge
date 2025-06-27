@@ -7,12 +7,14 @@ class KListTile extends StatelessWidget {
   final String path;
   final String title;
   final String subtitle;
+  final Map<String, dynamic> logementData;
 
   const KListTile({
     super.key,
     required this.path,
     required this.title,
     required this.subtitle,
+    required this.logementData,
   });
 
   @override
@@ -21,7 +23,7 @@ class KListTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       color: Colors.transparent.withOpacity(0.03),
       child: InkWell(
-        onTap:  () => Get.to(const DetailLoge()),
+        onTap: () => Get.to(() => DetailLoge(logementData: logementData)),
         borderRadius: BorderRadius.circular(20),
         child: Container(
           height: 120,
@@ -80,9 +82,6 @@ class KListTile extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // Icône action
-
             ],
           ),
         ),

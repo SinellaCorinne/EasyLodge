@@ -39,7 +39,6 @@ class UserPage1 extends StatelessWidget {
             // ✅ Nom utilisateur
 
             const SizedBox(height: 15),
-
             // ✅ Menu items stylisés
             _buildMenuItem(
               icon: Icons.person,
@@ -79,7 +78,7 @@ class UserPage1 extends StatelessWidget {
                   textConfirm: "Déconnecter",
                   confirmTextColor: Colors.white,
                   buttonColor: KColors.primary,
-                  onConfirm: () => Get.to(const Login()),
+                  onConfirm: () => Get.offAll( Login()),
                 );
               },
             ),

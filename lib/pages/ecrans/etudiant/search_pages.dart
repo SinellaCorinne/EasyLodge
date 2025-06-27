@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loge_app/pages/ecrans/etudiant/details_loge.dart';
-import '../../../composants/filtres.dart';
 import '../../../composants/liste_tile.dart';
 import '../../../theme/style.dart';
 
 class SearchPages extends StatelessWidget {
+  final List<dynamic> resultats;
 
-  const SearchPages({super.key, });
+  const SearchPages({super.key, required this.resultats});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class SearchPages extends StatelessWidget {
         backgroundColor: KColors.primary,
         elevation: 2,
         title: Text(
-          'EasyLodge',
+          'Résultats de recherche',
           style: KTypography.h3(context, color: Colors.white),
         ),
         centerTitle: true,
@@ -35,27 +35,37 @@ class SearchPages extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          const Filtres(),
-          const SizedBox(height: 10),
 
-          // ✅ Le ListView doit être dans un Expanded
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: KListTile(
-                    path: "assets/images/logement.jpeg",
-                    title: "Studio moderne",
-                    subtitle: "10 000 FCFA",
+            child: resultats.isEmpty
+                ? Center(
+                    child: Text(
+                      "Aucun logement trouvé.",
+                      style: KTypography.h4(context, color: Colors.grey),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    itemCount: resultats.length,
+                    itemBuilder: (context, index) {
+                      final logement = resultats[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => DetailLoge(logementData: logement));
+                          },
+                          child: KListTile(
+                  logementData: logement,
+                  path: logement["image"] ?? "assets/images/logement.jpeg",
+                  title: logement["titre"] ?? "",
+                  subtitle: logement["prix"] ?? "",
+                ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
           )
-
         ],
       ),
     );
