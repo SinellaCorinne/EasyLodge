@@ -9,11 +9,16 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text("Avec $nom", style: KTypography.h4(context, color: Colors.white)),
-        backgroundColor: KColors.primary,
+        backgroundColor: Colors.white,
+        elevation: 1,
+        iconTheme: IconThemeData(color: KColors.primary),
+        title: Text(
+          "Discussion avec $nom",
+          style: KTypography.h4(context, color: KColors.primary),
+        ),
+        centerTitle: true,
       ),
       body: Column(
         children: [

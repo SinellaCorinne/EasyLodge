@@ -29,6 +29,24 @@ class HomePagee extends StatelessWidget {
       "prix": "25 000 FCFA",
       "image": "assets/images/logement.jpeg"
     },
+    {
+      "titre": "Studio moderne",
+      "lieu": "Calavi",
+      "prix": "15 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
+    {
+      "titre": "Chambre simple",
+      "lieu": "Abomey",
+      "prix": "10 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
+    {
+      "titre": "Appartement T2",
+      "lieu": "Cotonou",
+      "prix": "25 000 FCFA",
+      "image": "assets/images/logement.jpeg"
+    },
   ];
 
   @override
@@ -182,22 +200,6 @@ class HomePagee extends StatelessWidget {
                 child: Column(
                   children: [
                     ElevatedButton.icon(
-                      onPressed: () => Get.to(AjoutLoge()),
-                      icon: const Icon(Icons.add),
-                      label: const Text("Ajouter un logement"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: KColors.secondary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                        textStyle: const TextStyle(fontSize: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 5,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
                       onPressed: () => Get.to(ReservationsPage()),
                       icon: const Icon(Icons.houseboat_outlined),
                       label: const Text("Voir les réservations"),
@@ -219,6 +221,11 @@ class HomePagee extends StatelessWidget {
             ],
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(AjoutLoge()),
+        backgroundColor: KColors.secondary,
+        child: const Icon(Icons.add,color: Colors.white,),
       ),
     );
   }
