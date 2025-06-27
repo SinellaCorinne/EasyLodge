@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../composants/paiements.dart';
 import '../style.dart';
 
 class PaiementsPage extends StatefulWidget {
@@ -14,44 +15,11 @@ class _PaiementsPageState extends State<PaiementsPage> {
   String _selectedFilter = 'Tous';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> paiements = [
-    {
-      'id': 'PAY001',
-      'etudiant': 'Marie Kouakou',
-      'logement': 'Appartement 2 pièces - Cocody',
-      'montant': 45000,
-      'date': '2024-06-22 14:30',
-      'methode': 'Mobile Money',
-      'statut': 'Validé',
-      'reference': 'MM240622001',
-      'type': 'Loyer',
-    },
-    {
-      'id': 'PAY002',
-      'etudiant': 'Jean Diabaté',
-      'logement': 'Studio - Marcory',
-      'montant': 25000,
-      'date': '2024-06-21 10:15',
-      'methode': 'Virement',
-      'statut': 'En attente',
-      'reference': 'VIR240621002',
-      'type': 'Caution',
-    },
-    {
-      'id': 'PAY003',
-      'etudiant': 'Fatou Traoré',
-      'logement': 'Chambre partagée - Adjamé',
-      'montant': 15000,
-      'date': '2024-06-20 16:45',
-      'methode': 'Carte bancaire',
-      'statut': 'Échoué',
-      'reference': 'CB240620003',
-      'type': 'Loyer',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -76,8 +44,11 @@ class _PaiementsPageState extends State<PaiementsPage> {
   }
 
   Widget _buildSearchAndFilter() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isDesktop ? 24 : 16),
       color: Colors.white,
       child: Column(
         children: [
@@ -95,7 +66,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
             ),
             onChanged: (value) => setState(() {}),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isDesktop ? 20 : 12),
           Row(
             children: [
               Expanded(
@@ -130,16 +101,19 @@ class _PaiementsPageState extends State<PaiementsPage> {
   }
 
   Widget _buildPaymentStatsCards() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isDesktop ? 24 : 16),
       child: Row(
         children: [
           Expanded(child: _buildStatCard('2.5M', 'Total', KColors.primary)),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(child: _buildStatCard('2.1M', 'Validés', Colors.green)),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(child: _buildStatCard('250K', 'En attente', Colors.orange)),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(child: _buildStatCard('150K', 'Échoués', Colors.red)),
         ],
       ),
@@ -184,7 +158,6 @@ class _PaiementsPageState extends State<PaiementsPage> {
 
   Widget _buildPaiementsList() {
     List<Map<String, dynamic>> filteredPaiements = _getFilteredPaiements();
-
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredPaiements.length,
@@ -196,14 +169,17 @@ class _PaiementsPageState extends State<PaiementsPage> {
   }
 
   Widget _buildPaiementCard(Map<String, dynamic> paiement) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     Color statusColor = _getPaymentStatusColor(paiement['statut']);
     IconData methodIcon = _getPaymentMethodIcon(paiement['methode']);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: isDesktop ? 16 : 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(isDesktop ? 24 : 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -217,7 +193,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
                   ),
                   child: Icon(methodIcon, color: KColors.primary),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: isDesktop ? 24 : 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,12 +242,12 @@ class _PaiementsPageState extends State<PaiementsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: isDesktop ? 20 : 12),
             Text(
               paiement['logement'],
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: isDesktop ? 16 : 8),
             Row(
               children: [
                 Icon(Iconsax.calendar, size: 16, color: Colors.grey.shade600),
@@ -298,7 +274,7 @@ class _PaiementsPageState extends State<PaiementsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: isDesktop ? 16 : 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -312,26 +288,14 @@ class _PaiementsPageState extends State<PaiementsPage> {
                 ),
                 Row(
                   children: [
-                    if (paiement['statut'] == 'En attente') ...[
-                      TextButton(
-                        onPressed: () => _rejectPayment(paiement),
-                        child: const Text('Refuser', style: TextStyle(color: Colors.red)),
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () => _approvePayment(paiement),
-                        child: const Text('Valider'),
-                      ),
-                    ] else ...[
-                      IconButton(
-                        icon: const Icon(Iconsax.receipt),
-                        onPressed: () => _viewPaymentReceipt(paiement),
-                      ),
-                      IconButton(
-                        icon: const Icon(Iconsax.more),
-                        onPressed: () => _showPaymentOptions(paiement),
-                      ),
-                    ],
+                    IconButton(
+                      icon: const Icon(Iconsax.receipt),
+                      onPressed: () => _viewPaymentReceipt(paiement),
+                    ),
+                    IconButton(
+                      icon: const Icon(Iconsax.more),
+                      onPressed: () => _showPaymentOptions(paiement),
+                    ),
                   ],
                 ),
               ],
@@ -370,11 +334,9 @@ class _PaiementsPageState extends State<PaiementsPage> {
 
   List<Map<String, dynamic>> _getFilteredPaiements() {
     List<Map<String, dynamic>> filtered = paiements;
-
     if (_selectedFilter != 'Tous') {
       filtered = filtered.where((paiement) => paiement['statut'] == _selectedFilter).toList();
     }
-
     if (_searchController.text.isNotEmpty) {
       String searchTerm = _searchController.text.toLowerCase();
       filtered = filtered.where((paiement) {
@@ -383,7 +345,6 @@ class _PaiementsPageState extends State<PaiementsPage> {
             paiement['id'].toLowerCase().contains(searchTerm);
       }).toList();
     }
-
     return filtered;
   }
 

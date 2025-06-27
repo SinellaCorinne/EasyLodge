@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../composants/user.dart';
 import '../style.dart';
 
 class UtilisateursPage extends StatefulWidget {
@@ -15,38 +16,7 @@ class _UtilisateursPageState extends State<UtilisateursPage> {
   String _selectedFilter = 'Tous';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> utilisateurs = [
-    {
-      'id': '001',
-      'nom': 'Marie Kouakou',
-      'email': 'marie.kouakou@gmail.com',
-      'type': 'Bailleur',
-      'telephone': '+225 07 12 34 56 78',
-      'dateInscription': '2024-06-15',
-      'statut': 'Actif',
-      'logements': 3,
-    },
-    {
-      'id': '002',
-      'nom': 'Jean Diabaté',
-      'email': 'jean.diabate@student.com',
-      'type': 'Étudiant',
-      'telephone': '+225 05 98 76 54 32',
-      'dateInscription': '2024-06-10',
-      'statut': 'Actif',
-      'reservations': 1,
-    },
-    {
-      'id': '003',
-      'nom': 'Fatou Traoré',
-      'email': 'fatou.traore@gmail.com',
-      'type': 'Bailleur',
-      'telephone': '+225 01 23 45 67 89',
-      'dateInscription': '2024-06-05',
-      'statut': 'Suspendu',
-      'logements': 2,
-    },
-  ];
+
 
   @override
   Widget build(BuildContext context) {

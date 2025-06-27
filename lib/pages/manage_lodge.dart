@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../composants/logements.dart';
 import '../style.dart';
 
 class LogementsPage extends StatefulWidget {
@@ -14,74 +15,7 @@ class _LogementsPageState extends State<LogementsPage> {
   String _selectedFilter = 'Tous';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> logements = [
-    {
-      'id': '001',
-      'titre': 'Chambre moderne Cocody',
-      'bailleur': 'Marie Kouakou',
-      'prix': 45000,
-      'statut': 'Disponible',
-      'type': 'Chambre',
-      'adresse': 'Cocody Riviera 2',
-      'dateAjout': '2024-06-15',
-      'images': 3,
-    },
-    {
-      'id': '002',
-      'titre': 'Studio meublé Marcory',
-      'bailleur': 'Jean Diabaté',
-      'prix': 85000,
-      'statut': 'Réservé',
-      'type': 'Studio',
-      'adresse': 'Marcory Zone 4',
-      'dateAjout': '2024-06-10',
-      'images': 5,
-    },
-    {
-      'id': '003',
-      'titre': 'Appartement 2 pièces',
-      'bailleur': 'Fatou Traoré',
-      'prix': 120000,
-      'statut': 'En attente',
-      'type': 'Appartement',
-      'adresse': 'Yopougon Selmer',
-      'dateAjout': '2024-06-20',
-      'images': 4,
-    },
-    {
-      'id': '004',
-      'titre': 'Chambre moderne Cocody',
-      'bailleur': 'Marie Kouakou',
-      'prix': 45000,
-      'statut': 'Disponible',
-      'type': 'Chambre',
-      'adresse': 'Cocody Riviera 2',
-      'dateAjout': '2024-06-15',
-      'images': 3,
-    },
-    {
-      'id': '005',
-      'titre': 'Studio meublé Marcory',
-      'bailleur': 'Jean Diabaté',
-      'prix': 85000,
-      'statut': 'Réservé',
-      'type': 'Studio',
-      'adresse': 'Marcory Zone 4',
-      'dateAjout': '2024-06-10',
-      'images': 5,
-    },
-    {
-      'id': '006',
-      'titre': 'Appartement 2 pièces',
-      'bailleur': 'Fatou Traoré',
-      'prix': 120000,
-      'statut': 'En attente',
-      'type': 'Appartement',
-      'adresse': 'Yopougon Selmer',
-      'dateAjout': '2024-06-20',
-      'images': 4,
-    },
-  ];
+
 
   @override
   Widget build(BuildContext context) {

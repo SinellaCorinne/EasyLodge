@@ -67,7 +67,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) return 'Veuillez saisir votre email';
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}\$');
     if (!emailRegex.hasMatch(value)) return 'Format d\'email invalide';
     return null;
   }
@@ -157,7 +157,6 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 content: Text('Lien de réinitialisation envoyé.'),
                 backgroundColor: Colors.green,
               ));
-              // Intégration future de l'API ici
             },
             child: Text('Envoyer'),
           ),
@@ -168,121 +167,127 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final isDesktop = MediaQuery.of(context).size.width > 800;
+    final isWide = MediaQuery.of(context).size.width > 1000;
     return Scaffold(
       backgroundColor: Colors.grey[50],
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(24),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Container(
-                  constraints: BoxConstraints(maxWidth: isDesktop ? 450 : double.infinity),
-                  child: Card(
-                    elevation: isDesktop ? 8 : 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            Image.asset("assets/images/Tiny house-bro.png", height: 100),
-                            SizedBox(height: 16),
-                            Text("EasyLodge", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: KColors.primary)),
-                            Text("Administration", style: TextStyle(color: Colors.grey[600])),
-                            SizedBox(height: 32),
-                            TextFormField(
-                              controller: emailController,
-                              validator: _validateEmail,
-                              decoration: InputDecoration(
-                                labelText: "Email",
-                                prefixIcon: Icon(Icons.email_outlined),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                filled: true,
-                                fillColor: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            TextFormField(
-                              controller: passwordController,
-                              validator: _validatePassword,
-                              obscureText: _obscurePassword,
-                              decoration: InputDecoration(
-                                labelText: "Mot de passe",
-                                prefixIcon: Icon(Icons.lock_outline),
-                                suffixIcon: IconButton(
-                                  icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                                ),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                                filled: true,
-                                fillColor: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: isWide ? 100 : 24, vertical: 32),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 500),
+                      child: Card(
+                        elevation: isWide ? 8 : 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                          padding: EdgeInsets.all(32),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
-                                Row(children: [
-                                  Checkbox(
-                                    value: _rememberMe,
-                                    onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                                Image.asset("assets/images/Tiny house-bro.png", height: 100),
+                                SizedBox(height: 16),
+                                Text("EasyLodge", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: KColors.primary)),
+                                Text("Administration", style: TextStyle(color: Colors.grey[600])),
+                                SizedBox(height: 32),
+                                TextFormField(
+                                  controller: emailController,
+                                  validator: _validateEmail,
+                                  decoration: InputDecoration(
+                                    labelText: "Email",
+                                    prefixIcon: Icon(Icons.email_outlined),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    filled: true,
+                                    fillColor: Colors.white,
                                   ),
-                                  Text("Se souvenir de moi"),
-                                ]),
-                                TextButton(
-                                  onPressed: _forgotPassword,
-                                  child: Text("Mot de passe oublié ?", style: TextStyle(color: KColors.primary)),
+                                ),
+                                SizedBox(height: 20),
+                                TextFormField(
+                                  controller: passwordController,
+                                  validator: _validatePassword,
+                                  obscureText: _obscurePassword,
+                                  decoration: InputDecoration(
+                                    labelText: "Mot de passe",
+                                    prefixIcon: Icon(Icons.lock_outline),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                    ),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Row(children: [
+                                      Checkbox(
+                                        value: _rememberMe,
+                                        onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                                      ),
+                                      Text("Se souvenir de moi"),
+                                    ]),
+
+                                  ],
+                                ),
+                                SizedBox(height: 20),
+                                SizedBox(
+                                  height: 50,
+                                  width: double.infinity,
+                                  child: isLoading
+                                      ? Center(child: CircularProgressIndicator())
+                                      : ElevatedButton(
+                                    onPressed: () => Get.to(() => AdminDashboardPage()),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: KColors.primary,
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    ),
+                                    child: Text("Se connecter", style: KTypography.h5(context, color: Colors.white)),
+                                  ),
+                                ),
+                                if (errorMessage != null) ...[
+                                  SizedBox(height: 13),
+                                  Text(errorMessage!, style: TextStyle(color: Colors.red)),
+                                ],
+                                if (successMessage != null) ...[
+                                  SizedBox(height: 13),
+                                  Text(successMessage!, style: TextStyle(color: Colors.green)),
+                                ],
+                                SizedBox(height: 14),
+                                Column(
+
+                                  children: [
+                                    TextButton(
+                                      onPressed: _forgotPassword,
+                                      child: Text("Mot de passe oublié ?", style: TextStyle(color: KColors.primary)),
+                                    ),
+                                    Text("Pas encore de compte ? "),
+                                    TextButton(
+                                      onPressed: () => Get.to(() => RegisterPage()),
+                                      child: Text("S'inscrire", style: TextStyle(color: KColors.primary,),),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            SizedBox(height: 24),
-                            SizedBox(
-                              height: 50,
-                              width: double.infinity,
-                              child: isLoading
-                                  ? Center(child: CircularProgressIndicator())
-                                  : ElevatedButton(
-                                onPressed: login,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: KColors.primary,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                ),
-                                child: Text("Se connecter",style: KTypography.h5(context,color: Colors.white),),
-                              ),
-                            ),
-                            if (errorMessage != null) ...[
-                              SizedBox(height: 16),
-                              Text(errorMessage!, style: TextStyle(color: Colors.red)),
-                            ],
-                            if (successMessage != null) ...[
-                              SizedBox(height: 16),
-                              Text(successMessage!, style: TextStyle(color: Colors.green)),
-                            ],
-                            SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text("Pas encore de compte ? "),
-                                TextButton(
-                                  onPressed: () => Get.to(() => AdminDashboardPage()),//() => Get.to(() => RegisterPage()),
-                                  child: Text("S'inscrire", style: TextStyle(color: KColors.primary)),
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

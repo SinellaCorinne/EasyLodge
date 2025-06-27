@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:loge_admin/pages/manage_reservation.dart';
-import 'package:loge_admin/pages/paramètres.dart';
-import 'package:loge_admin/pages/profil.dart';
 import '../auth/login.dart';
 import '../style.dart';
 import 'manage_lodge.dart';
 import 'manage_paiement.dart';
+import 'manage_reservation.dart';
 import 'manage_user.dart';
 import 'messagerie.dart';
+import 'paramètres.dart';
+import 'profil.dart';
 
 class AdminDashboardPage extends StatefulWidget {
   const AdminDashboardPage({super.key});
@@ -21,7 +21,6 @@ class AdminDashboardPage extends StatefulWidget {
 class _AdminDashboardPageState extends State<AdminDashboardPage> {
   final TextEditingController _searchController = TextEditingController();
 
-  // Données simulées
   final Map<String, dynamic> dashboardStats = {
     'logements_disponibles': 250,
     'logements_reserves': 120,
@@ -200,19 +199,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildBody() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSearchBar(),
-          const SizedBox(height: 24),
+          SizedBox(height: isDesktop ? 32 : 24),
           _buildQuickStats(),
-          const SizedBox(height: 24),
+          SizedBox(height: isDesktop ? 32 : 24),
           _buildChartsSection(),
-          const SizedBox(height: 24),
+          SizedBox(height: isDesktop ? 32 : 24),
           _buildDetailedStats(),
-          const SizedBox(height: 24),
+          SizedBox(height: isDesktop ? 32 : 24),
           _buildNotificationsSection(),
         ],
       ),
@@ -250,6 +252,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildQuickStats() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -257,7 +262,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           'Vue d\'ensemble',
           style: KTypography.h3(context).copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isDesktop ? 24 : 16),
         Row(
           children: [
             Expanded(
@@ -268,7 +273,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 Iconsax.home,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: isDesktop ? 24 : 12),
             Expanded(
               child: _buildSummaryCard(
                 '${dashboardStats['logements_reserves']}',
@@ -279,7 +284,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: isDesktop ? 24 : 12),
         Row(
           children: [
             Expanded(
@@ -290,7 +295,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 Iconsax.wallet_check,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: isDesktop ? 24 : 12),
             Expanded(
               child: _buildSummaryCard(
                 '+${dashboardStats['nouveaux_utilisateurs_semaine']}',
@@ -352,6 +357,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildChartsSection() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -359,11 +367,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           'Statistiques détaillées',
           style: KTypography.h3(context).copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isDesktop ? 24 : 16),
         Row(
           children: [
             Expanded(child: _buildChartBox('Utilisateurs actifs')),
-            const SizedBox(width: 12),
+            SizedBox(width: isDesktop ? 24 : 12),
             Expanded(child: _buildChartBox('Réservations récentes')),
           ],
         ),
@@ -394,7 +402,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           Expanded(
             child: Center(
               child: Text(
-                'Graphique à implémenter',
+                'Graphique ',
                 style: TextStyle(color: Colors.grey.shade400),
               ),
             ),
@@ -405,6 +413,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildDetailedStats() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     final stats = [
       {'icon': Iconsax.user, 'label': 'Étudiants', 'value': '${dashboardStats['etudiants']}'},
       {'icon': Iconsax.building_3, 'label': 'Bailleurs', 'value': '${dashboardStats['bailleurs']}'},
@@ -419,10 +430,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           'Statistiques globales',
           style: KTypography.h3(context).copyWith(fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: isDesktop ? 24 : 16),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: isDesktop ? 24 : 12,
+          runSpacing: isDesktop ? 24 : 12,
           children: stats.map((stat) => _buildStatCard(
             stat['icon'] as IconData,
             stat['label'] as String,
@@ -434,8 +445,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildStatCard(IconData icon, String label, String value) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Container(
-      width: (MediaQuery.of(context).size.width - 56) / 2,
+      width: isDesktop ? (size.width - 96) / 4 : (size.width - 56) / 2,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -474,6 +488,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildNotificationsSection() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -486,17 +503,20 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             ),
             TextButton(
               onPressed: () {},
-              child: Text('Voir tout', style: TextStyle(color: KColors.primary)),
+              child: Text('Tout', style: TextStyle(color: KColors.primary)),
             ),
           ],
         ),
-        const SizedBox(height: 16),
-        ...recentNotifications.take(5).map((notification) => _buildNotificationItem(
-          notification['icon'] as IconData,
-          notification['title'] as String,
-          notification['description'] as String,
-          notification['time'] as String,
-          notification['isNew'] as bool,
+        SizedBox(height: isDesktop ? 24 : 16),
+        ...recentNotifications.take(5).map((notification) => Padding(
+          padding: EdgeInsets.only(bottom: isDesktop ? 16 : 8),
+          child: _buildNotificationItem(
+            notification['icon'] as IconData,
+            notification['title'] as String,
+            notification['description'] as String,
+            notification['time'] as String,
+            notification['isNew'] as bool,
+          ),
         )),
       ],
     );
@@ -504,7 +524,6 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   Widget _buildNotificationItem(IconData icon, String title, String description, String time, bool isNew) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),

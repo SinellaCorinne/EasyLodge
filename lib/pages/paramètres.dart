@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:loge_admin/pages/privacy.dart';
+import 'package:loge_admin/pages/session.dart';
+import 'package:loge_admin/pages/support.dart';
+import 'package:loge_admin/pages/terms_page.dart';
+import '../auth/password_f.dart';
 import '../style.dart';
+import 'activity_log.dart';
 
 class ParametresPage extends StatefulWidget {
   const ParametresPage({super.key});
@@ -210,13 +216,13 @@ class _ParametresPageState extends State<ParametresPage> {
       IconData icon,
       ) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2E7D32)),
+      leading: Icon(icon, color: KColors.primary),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[600])),
       trailing: Switch(
         value: value,
         onChanged: onChanged,
-        activeColor: const Color(0xFF2E7D32),
+        activeColor:  KColors.primary,
       ),
     );
   }
@@ -231,7 +237,7 @@ class _ParametresPageState extends State<ParametresPage> {
       IconData icon,
       ) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2E7D32)),
+      leading: Icon(icon, color:  KColors.primary),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[600])),
       trailing: DropdownButton<String>(
@@ -256,7 +262,7 @@ class _ParametresPageState extends State<ParametresPage> {
       IconData icon,
       ) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2E7D32)),
+      leading: Icon(icon, color:  KColors.primary),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[600])),
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -267,7 +273,7 @@ class _ParametresPageState extends State<ParametresPage> {
   // Méthode pour construire un tile d'information
   Widget _buildInfoTile(String title, String value, IconData icon) {
     return ListTile(
-      leading: Icon(icon, color: const Color(0xFF2E7D32)),
+      leading: Icon(icon, color:  KColors.primary),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
       trailing: Text(
         value,
@@ -372,112 +378,7 @@ class _ParametresPageState extends State<ParametresPage> {
   }
 }
 
-// ==================== PAGES AUXILIAIRES ====================
 
-class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Changer le mot de passe'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page de changement de mot de passe'),
-      ),
-    );
-  }
-}
 
-class SessionsPage extends StatelessWidget {
-  const SessionsPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sessions actives'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page de gestion des sessions'),
-      ),
-    );
-  }
-}
-
-class ActivityLogPage extends StatelessWidget {
-  const ActivityLogPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Journal d\'activité'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page du journal d\'activité'),
-      ),
-    );
-  }
-}
-
-class TermsPage extends StatelessWidget {
-  const TermsPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Conditions d\'utilisation'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page des conditions d\'utilisation'),
-      ),
-    );
-  }
-}
-
-class PrivacyPolicyPage extends StatelessWidget {
-  const PrivacyPolicyPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Politique de confidentialité'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page de politique de confidentialité'),
-      ),
-    );
-  }
-}
-
-class SupportPage extends StatelessWidget {
-  const SupportPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Support technique'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: const Center(
-        child: Text('Page de support technique'),
-      ),
-    );
-  }
-}

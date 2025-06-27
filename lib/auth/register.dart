@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:dio/dio.dart' as dio;
 import 'dart:io';
 import '../composants/api_url.dart';
+import '../pages/dashboard.dart';
 import '../style.dart';
 import 'login.dart';
 
@@ -20,18 +21,14 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
   final TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final dio.Dio _dio = dio.Dio();
-
   bool isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
   String? errorMessage;
   String? successMessage;
-
-  // Variables pour la carte d'étudiant et le rôle
   File? studentCardFile;
   String role = "admin";
-
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -48,7 +45,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       duration: Duration(milliseconds: 1500),
       vsync: this,
     );
-
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -56,7 +52,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-
     _slideAnimation = Tween<Offset>(
       begin: Offset(0, 0.3),
       end: Offset.zero,
@@ -64,7 +59,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       parent: _animationController,
       curve: Curves.easeOutCubic,
     ));
-
     _animationController.forward();
   }
 
@@ -93,7 +87,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     if (value.trim().length < 2) {
       return 'Le nom doit contenir au moins 2 caractères';
     }
-    // Vérifier que le nom ne contient que des lettres et espaces
     if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value.trim())) {
       return 'Le nom ne doit contenir que des lettres';
     }
@@ -128,10 +121,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     if (value == null || value.trim().isEmpty) {
       return 'Veuillez saisir votre numéro de téléphone';
     }
-    // Nettoyer le numéro (enlever espaces, tirets, etc.)
     String cleanedPhone = value.replaceAll(RegExp(r'[\s\-\(\)]'), '');
-
-    // Vérifier format béninois (+229 suivi de 8 chiffres)
     if (!RegExp(r'^(\+229)?[0-9]{8}$').hasMatch(cleanedPhone)) {
       return 'Format: +229 XX XX XX XX ou 8 chiffres';
     }
@@ -148,10 +138,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
     if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)').hasMatch(value)) {
       return 'Doit contenir: majuscule, minuscule et chiffre';
     }
-    // Vérifier la présence de caractères spéciaux (optionnel mais recommandé)
-    if (!RegExp(r'^(?=.*[!@#$%^&*(),.?":{}|<>])').hasMatch(value)) {
-      // Note: On peut rendre ceci optionnel selon les besoins
-    }
     return null;
   }
 
@@ -166,34 +152,27 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
   }
 
   Future<void> register() async {
-    // Fermer le clavier
     FocusScope.of(context).unfocus();
-
     if (!_formKey.currentState!.validate()) {
       _showErrorSnackbar("Veuillez corriger les erreurs dans le formulaire");
       return;
     }
-
     if (!_acceptTerms) {
       setState(() {
         errorMessage = "Vous devez accepter les conditions d'utilisation.";
       });
       return;
     }
-
     setState(() {
       isLoading = true;
       errorMessage = null;
       successMessage = null;
     });
-
     try {
-      // Nettoyer les données
       String cleanedPhone = phoneController.text.replaceAll(RegExp(r'[\s\-\(\)]'), '');
       if (!cleanedPhone.startsWith('+229')) {
         cleanedPhone = '+229$cleanedPhone';
       }
-
       Map<String, dynamic> formDataMap = {
         "nom": nomController.text.trim(),
         "prenom": prenomController.text.trim(),
@@ -203,17 +182,13 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
         "password_confirmation": confirmPasswordController.text,
         "role_user": role,
       };
-
-      // Ajouter le fichier seulement s'il existe
       if (studentCardFile != null) {
         formDataMap["carte_etudiant"] = await dio.MultipartFile.fromFile(
           studentCardFile!.path,
           filename: studentCardFile!.path.split('/').last,
         );
       }
-
       final formData = dio.FormData.fromMap(formDataMap);
-
       final response = await _dio.post(
         '${ApiBaseUrl.baseUrl}/register',
         data: formData,
@@ -223,20 +198,13 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
           },
         ),
       );
-
       if (response.statusCode == 201 || response.statusCode == 200) {
         setState(() {
           successMessage = "Inscription réussie ! Redirection vers la connexion...";
         });
-
-        // Animation de succès
         _showSuccessSnackbar("Compte administrateur créé avec succès !");
-
         await Future.delayed(Duration(seconds: 2));
-
-        // Navigation vers la page de connexion
         Get.offAll(() => Login(), transition: Transition.fadeIn);
-
       } else {
         setState(() {
           errorMessage = "Erreur lors de l'inscription. Veuillez réessayer.";
@@ -260,7 +228,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
 
   void _handleDioError(dio.DioException e) {
     String message = "Erreur lors de l'inscription.";
-
     switch (e.type) {
       case dio.DioExceptionType.connectionTimeout:
       case dio.DioExceptionType.sendTimeout:
@@ -285,7 +252,6 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       default:
         message = "Erreur de réseau. Vérifiez votre connexion.";
     }
-
     setState(() {
       errorMessage = message;
     });
@@ -480,14 +446,14 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.all(24.0),
+            padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: SlideTransition(
                 position: _slideAnimation,
                 child: Container(
                   constraints: BoxConstraints(
-                    maxWidth: isDesktop ? 450 : double.infinity,
+                    maxWidth: isDesktop ? 600 : double.infinity,
                   ),
                   child: Card(
                     elevation: isDesktop ? 8 : 0,
@@ -496,19 +462,15 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(32.0),
+                      padding: EdgeInsets.all(isDesktop ? 32.0 : 16.0),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            // Header avec logo et titre
                             _buildHeader(),
-
-                            SizedBox(height: 32),
-
-                            // Champs du formulaire
+                            SizedBox(height: isDesktop ? 32 : 16),
                             _buildCustomTextField(
                               controller: nomController,
                               label: "Nom",
@@ -518,9 +480,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                               textInputAction: TextInputAction.next,
                               textCapitalization: TextCapitalization.words,
                             ),
-
-                            SizedBox(height: 16),
-
+                            SizedBox(height: isDesktop ? 24 : 16),
                             _buildCustomTextField(
                               controller: prenomController,
                               label: "Prénom",
@@ -530,9 +490,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                               textInputAction: TextInputAction.next,
                               textCapitalization: TextCapitalization.words,
                             ),
-
-                            SizedBox(height: 16),
-
+                            SizedBox(height: isDesktop ? 24 : 16),
                             _buildCustomTextField(
                               controller: emailController,
                               label: "Adresse email",
@@ -542,9 +500,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                             ),
-
-                            SizedBox(height: 16),
-
+                            SizedBox(height: isDesktop ? 24 : 16),
                             _buildCustomTextField(
                               controller: phoneController,
                               label: "Numéro de téléphone",
@@ -554,9 +510,7 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                               keyboardType: TextInputType.phone,
                               textInputAction: TextInputAction.next,
                             ),
-
-                            SizedBox(height: 16),
-
+                            SizedBox(height: isDesktop ? 24 : 16),
                             _buildCustomTextField(
                               controller: passwordController,
                               label: "Mot de passe",
@@ -579,12 +533,9 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                                 },
                               ),
                             ),
-
-                            SizedBox(height: 4),
+                            SizedBox(height: isDesktop ? 16 : 8),
                             _buildPasswordRequirements(),
-
-                            SizedBox(height: 16),
-
+                            SizedBox(height: isDesktop ? 24 : 16),
                             _buildCustomTextField(
                               controller: confirmPasswordController,
                               label: "Confirmer le mot de passe",
@@ -608,27 +559,15 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
                                 },
                               ),
                             ),
-
-                            SizedBox(height: 20),
-
-                            // Case à cocher pour les conditions
+                            SizedBox(height: isDesktop ? 32 : 20),
                             _buildTermsCheckbox(),
-
-                            SizedBox(height: 24),
-
-                            // Bouton d'inscription
+                            SizedBox(height: isDesktop ? 32 : 24),
                             _buildRegisterButton(),
-
-                            // Messages d'erreur et de succès
                             if (errorMessage != null) _buildErrorMessage(),
                             if (successMessage != null) _buildSuccessMessage(),
-
-                            // Lien vers la page de connexion
-                            SizedBox(height: 24),
+                            SizedBox(height: isDesktop ? 32 : 24),
                             _buildLoginLink(),
-
-                            SizedBox(height: 8),
-
+                            SizedBox(height: isDesktop ? 16 : 8),
                             Center(
                               child: Text(
                                 "Création de compte administrateur",
@@ -814,7 +753,9 @@ class _RegisterPageState extends State<RegisterPage> with TickerProviderStateMix
         ),
       )
           : ElevatedButton(
-        onPressed: register,
+       onPressed: () {
+    Get.to(() => AdminDashboardPage(), transition: Transition.fadeIn);
+    },  //register,
         style: ElevatedButton.styleFrom(
           backgroundColor: KColors.primary,
           foregroundColor: Colors.white,

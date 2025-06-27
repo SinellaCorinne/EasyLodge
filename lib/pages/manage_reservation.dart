@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../composants/reservations.dart';
 import '../style.dart';
 
 class ReservationsPage extends StatefulWidget {
@@ -14,44 +15,6 @@ class _ReservationsPageState extends State<ReservationsPage> {
   String _selectedFilter = 'Toutes';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> reservations = [
-    {
-      'id': 'RES001',
-      'etudiant': 'Marie Kouakou',
-      'logement': 'Appartement 2 pièces - Cocody',
-      'proprietaire': 'Jean Diabaté',
-      'dateReservation': '2024-06-20',
-      'dateDebut': '2024-07-01',
-      'dateFin': '2024-12-31',
-      'montant': 45000,
-      'statut': 'Confirmée',
-      'avatar': Iconsax.user,
-    },
-    {
-      'id': 'RES002',
-      'etudiant': 'Fatou Traoré',
-      'logement': 'Studio - Marcory',
-      'proprietaire': 'Aminata Koné',
-      'dateReservation': '2024-06-21',
-      'dateDebut': '2024-07-15',
-      'dateFin': '2024-12-31',
-      'montant': 25000,
-      'statut': 'En attente',
-      'avatar': Iconsax.user,
-    },
-    {
-      'id': 'RES003',
-      'etudiant': 'Koffi Yao',
-      'logement': 'Chambre partagée - Adjamé',
-      'proprietaire': 'Kouassi Désiré',
-      'dateReservation': '2024-06-22',
-      'dateDebut': '2024-08-01',
-      'dateFin': '2024-12-31',
-      'montant': 15000,
-      'statut': 'Annulée',
-      'avatar': Iconsax.user,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +227,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
               style: TextStyle(color: Colors.grey.shade600),
             ),
             const SizedBox(height: 8),
-            Row(
+           Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
@@ -287,18 +250,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (reservation['statut'] == 'En attente') ...[
-                  TextButton(
-                    onPressed: () => _rejectReservation(reservation),
-                    child: const Text('Refuser',
-                        style: TextStyle(color: Colors.red)),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () => _approveReservation(reservation),
-                    child: const Text('Approuver'),
-                  ),
-                ] else ...[
+
                   IconButton(
                     icon: const Icon(Iconsax.eye),
                     onPressed: () => _viewReservationDetails(reservation),
@@ -308,7 +260,7 @@ class _ReservationsPageState extends State<ReservationsPage> {
                     onPressed: () => _showReservationOptions(reservation),
                   ),
                 ],
-              ],
+
             ),
           ],
         ),

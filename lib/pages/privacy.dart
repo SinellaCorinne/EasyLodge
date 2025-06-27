@@ -1,18 +1,19 @@
+
 import 'package:flutter/material.dart';
 
-class ChangePasswordPage extends StatelessWidget {
-  const ChangePasswordPage({super.key});
+class PrivacyPolicyPage extends StatelessWidget {
+  const PrivacyPolicyPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Changer le mot de passe'),
+        title: const Text('Politique de confidentialité'),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: const Center(
-        child: Text('Page de changement de mot de passe'),
+        child: Text('Page de politique de confidentialité'),
       ),
     );
   }

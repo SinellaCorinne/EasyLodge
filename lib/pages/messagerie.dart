@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import '../composants/messages.dart';
 import '../style.dart';
 
 class MessagesPage extends StatefulWidget {
@@ -14,41 +15,11 @@ class _MessagesPageState extends State<MessagesPage> {
   String _selectedFilter = 'Tous';
   final TextEditingController _searchController = TextEditingController();
 
-  final List<Map<String, dynamic>> messages = [
-    {
-      'id': '001',
-      'expediteur': 'Marie Kouakou',
-      'sujet': 'Problème avec le logement',
-      'message': 'Bonjour, j\'ai un problème avec le chauffage de mon logement...',
-      'date': '2024-06-22 14:30',
-      'statut': 'Non lu',
-      'priorite': 'Urgent',
-      'type': 'Support',
-    },
-    {
-      'id': '002',
-      'expediteur': 'Jean Diabaté',
-      'sujet': 'Question sur la réservation',
-      'message': 'Je voudrais savoir si ma réservation est confirmée...',
-      'date': '2024-06-22 10:15',
-      'statut': 'Lu',
-      'priorite': 'Normal',
-      'type': 'Question',
-    },
-    {
-      'id': '003',
-      'expediteur': 'Fatou Traoré',
-      'sujet': 'Demande de remboursement',
-      'message': 'Suite à l\'annulation de ma réservation, je demande un remboursement...',
-      'date': '2024-06-21 16:45',
-      'statut': 'Répondu',
-      'priorite': 'High',
-      'type': 'Réclamation',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
@@ -73,8 +44,11 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   Widget _buildSearchAndFilter() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isDesktop ? 24 : 16),
       color: Colors.white,
       child: Column(
         children: [
@@ -91,11 +65,10 @@ class _MessagesPageState extends State<MessagesPage> {
               fillColor: Colors.grey.shade100,
             ),
             onChanged: (value) {
-              // Logique de recherche
               setState(() {});
             },
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: isDesktop ? 20 : 12),
           Row(
             children: [
               Expanded(
@@ -130,22 +103,25 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   Widget _buildMessageStatsCards() {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isDesktop ? 24 : 16),
       child: Row(
         children: [
           Expanded(
             child: _buildStatCard('45', 'Total', KColors.primary),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(
             child: _buildStatCard('12', 'Non lus', Colors.red),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(
             child: _buildStatCard('8', 'Urgents', Colors.orange),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: isDesktop ? 24 : 12),
           Expanded(
             child: _buildStatCard('25', 'Répondus', Colors.green),
           ),
@@ -192,7 +168,6 @@ class _MessagesPageState extends State<MessagesPage> {
 
   Widget _buildMessagesList() {
     List<Map<String, dynamic>> filteredMessages = _getFilteredMessages();
-
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: filteredMessages.length,
@@ -204,17 +179,20 @@ class _MessagesPageState extends State<MessagesPage> {
   }
 
   Widget _buildMessageCard(Map<String, dynamic> message) {
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     Color statusColor = _getStatusColor(message['statut']);
     Color priorityColor = _getPriorityColor(message['priorite']);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: isDesktop ? 16 : 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => _openMessageDetail(message),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isDesktop ? 24 : 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -225,7 +203,7 @@ class _MessagesPageState extends State<MessagesPage> {
                     backgroundColor: KColors.primary.withOpacity(0.1),
                     child: const Icon(Iconsax.user, color: KColors.primary),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: isDesktop ? 24 : 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,14 +259,14 @@ class _MessagesPageState extends State<MessagesPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isDesktop ? 20 : 12),
               Text(
                 message['message'],
                 style: TextStyle(color: Colors.grey.shade700),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isDesktop ? 20 : 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -301,21 +279,7 @@ class _MessagesPageState extends State<MessagesPage> {
                         style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          message['type'],
-                          style: const TextStyle(
-                            color: Colors.blue,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
+                      
                     ],
                   ),
                   Row(
@@ -344,7 +308,6 @@ class _MessagesPageState extends State<MessagesPage> {
     );
   }
 
-  // Méthodes utilitaires
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Non lu':
@@ -373,8 +336,6 @@ class _MessagesPageState extends State<MessagesPage> {
 
   List<Map<String, dynamic>> _getFilteredMessages() {
     List<Map<String, dynamic>> filtered = messages;
-
-    // Filtrage par statut
     if (_selectedFilter != 'Tous') {
       filtered = filtered.where((message) {
         if (_selectedFilter == 'Urgent') {
@@ -383,8 +344,6 @@ class _MessagesPageState extends State<MessagesPage> {
         return message['statut'] == _selectedFilter;
       }).toList();
     }
-
-    // Filtrage par recherche
     if (_searchController.text.isNotEmpty) {
       String searchTerm = _searchController.text.toLowerCase();
       filtered = filtered.where((message) {
@@ -393,23 +352,18 @@ class _MessagesPageState extends State<MessagesPage> {
             message['message'].toLowerCase().contains(searchTerm);
       }).toList();
     }
-
     return filtered;
   }
 
-  // Méthodes d'action
   void _composeMessage() {
-    // Navigation vers la page de composition de message
     print('Composer un nouveau message');
   }
 
   void _openMessageDetail(Map<String, dynamic> message) {
-    // Navigation vers les détails du message
     print('Ouvrir le message: ${message['id']}');
   }
 
   void _replyToMessage(Map<String, dynamic> message) {
-    // Répondre au message
     print('Répondre au message: ${message['id']}');
   }
 
